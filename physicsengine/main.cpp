@@ -14,7 +14,7 @@ int main() {
 	auto app = new Game();
 
 	// initialise and loop
-	app->run("ufo land: battle royale", 1280, 720, false);
+	app->run("aie physics engine", 854, 480, false);
 
 	// deallocation
 	delete app;

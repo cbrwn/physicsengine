@@ -258,3 +258,5 @@ _deps
 # game executable
 game
 
+# ignore compiled libraries
+*.a

@@ -106,7 +106,7 @@ public:
 	// general broad phase collision detection
 	bool isCollidingBroad(Collider* other);
 	// narrow phase collision detection
-	bool isCollidingSAT(Collider* other, float& penOut, Vector3& axisOut);
+	bool isCollidingSAT(Collider* other, float& penOut, Vector3& axisOut, Vector3& pointOut);
 
 	bool rayTestBroad(Vector3 const& start, Vector3 const& dir, float* outDist);
 

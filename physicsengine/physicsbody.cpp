@@ -5,6 +5,7 @@
 #include <Gizmos.h>
 
 #include "util.h"
+#include "shapes.h"
 #include "collider.h"
 #include "collideraabb.h"
 #include "collidersphere.h"
@@ -20,7 +21,7 @@ PhysicsBody::PhysicsBody(Collider* collider)
 
 	// default velocities
 	m_velocity = Vector3(0, 0, 0);
-	m_angularVelocity = Vector3(1, 0, 0);
+	m_angularVelocity = Vector3(0, 0, 0);
 
 	// default values
 	m_zone = false;
@@ -64,7 +65,7 @@ void PhysicsBody::update(float delta)
 	{
 		// apply gravity
 		if (m_useGravity)
-			m_velocity.y -= m_gravityStrength * 30.0f * delta;
+			m_velocity.y -= m_gravityStrength * PhysicsManager::gravity * delta;
 		m_velocity -= (m_velocity * m_drag) * delta;
 
 		// apply velocities
@@ -439,8 +440,9 @@ void PhysicsBody::checkCollision()
 
 		// perform SAT collision and resolve it if it happened
 		Vector3 axis;
+        Vector3 point;
 		float penetration;
-		if (isCollidingSAT(acol, penetration, axis))
+		if (isCollidingSAT(acol, penetration, axis, point))
 		{
 			if (!m_zone && !body->isZone())
 				resolveCollision(acol, penetration, axis);
@@ -448,6 +450,8 @@ void PhysicsBody::checkCollision()
 				m_collideCallback(body);
 
 			m_colliding.add(body);
+
+            drawSphere(point, 0.2f, Vector4(1,0,0,1));
 		}
 	}
 }
@@ -607,7 +611,7 @@ bool PhysicsBody::isCollidingBroad(Collider* other)
 	return false;
 }
 
-bool PhysicsBody::isCollidingSAT(Collider* other, float& penOut, Vector3& axisOut)
+bool PhysicsBody::isCollidingSAT(Collider* other, float& penOut, Vector3& axisOut, Vector3& pointOut)
 {
 	// get a slightly shorter reference to our collider
 	Collider* thisCol = m_collider;
@@ -636,6 +640,7 @@ bool PhysicsBody::isCollidingSAT(Collider* other, float& penOut, Vector3& axisOu
 		otherPoints.add(pt);
 	}
 
+    DArray<Vector3> penPoints;
 	DArray<float> penetrations;
 	// start checking for overlaps!
 	for (int i = 0; i < axes.getCount(); ++i)
@@ -647,6 +652,8 @@ bool PhysicsBody::isCollidingSAT(Collider* other, float& penOut, Vector3& axisOu
 		float minb =  INFINITY;
 		float maxb = -INFINITY;
 
+        int minIndex = -1;
+        int maxIndex = -1;
 		// project each vertex of this shape onto the current axis
 		for (int j = 0; j < thisPoints.getCount(); ++j)
 		{
@@ -654,11 +661,15 @@ bool PhysicsBody::isCollidingSAT(Collider* other, float& penOut, Vector3& axisOu
 			float dot = axis.dot(pt);
 
 			// keep track of it if it's lower than min
-			if (dot < mina)
+			if (dot < mina) {
 				mina = dot;
+                minIndex = j;
+            }
 			// or higher than max
-			if (dot > maxa)
+			if (dot > maxa) {
 				maxa = dot;
+                maxIndex = j;
+            }
 		}
 		// project each vertex of the other shape onto the current axis
 		for (int j = 0; j < otherPoints.getCount(); ++j)
@@ -675,7 +686,13 @@ bool PhysicsBody::isCollidingSAT(Collider* other, float& penOut, Vector3& axisOu
 		}
 
 		// get the amount that these objects overlap on this axis
-		float overlap = fminf(maxa - minb, maxb - mina);
+		//float overlap = fminf(maxa - minb, maxb - mina);
+        float overlap = maxa - minb;
+        int pointIndex = maxIndex;
+        if(maxb - mina < overlap) {
+            overlap = maxb - mina;
+            pointIndex = minIndex;
+        }
 
 		// they're not colliding if there's no overlap on an axis
 		if (overlap <= 0.0f)
@@ -683,6 +700,8 @@ bool PhysicsBody::isCollidingSAT(Collider* other, float& penOut, Vector3& axisOu
 
 		// keep track of this amount of overlap to find the axis of collision
 		penetrations.add(overlap);
+        // and keep track of the point most responsible for this overlap
+        penPoints.add(thisPoints[pointIndex]);
 	}
 
 	// get the lowest penetration's index
@@ -693,6 +712,8 @@ bool PhysicsBody::isCollidingSAT(Collider* other, float& penOut, Vector3& axisOu
 
 	// output this penetration value
 	penOut = penetrations[lowest];
+    // and that penetration's most responsible point
+    pointOut = penPoints[lowest];
 
 	// use the objects' relative positions to figure out if the collision
 	// is happening in the same direction as the axis or not

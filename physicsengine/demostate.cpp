@@ -1,11 +1,12 @@
 #include "demostate.h"
 
+#include <color.h>
+#include <gmath.h>
 #include <Input.h>
 
 #include "game.h"
 #include "world.h"
 #include "camera.h"
-#include <gmath.h>
 
 // actors
 #include "box.h"
@@ -41,6 +42,8 @@ void DemoState::onEnter()
 	m_timer = 0.0f;
 
 	m_grabbed = nullptr;
+
+    PhysicsManager::gravity = 18.0f;
 }
 
 void DemoState::onLeave()
@@ -110,12 +113,18 @@ void DemoState::draw()
 
 unsigned int DemoState::randomColor()
 {
-	unsigned int result = 0;
-	result |= randBetween(0x00, 0xff) << 24;
-	result |= randBetween(0x00, 0xff) << 16;
-	result |= randBetween(0x00, 0xff) << 8;
-	result |= 0xff;
-	return result;
+    unsigned int result = hsb(randBetween(0.0f, 1.0f), 1.0f, 1.0f);
+
+    result &= 0xffffff00;
+    result |= 0x44;
+
+    return result;
+	//unsigned int result = 0;
+	//result |= randBetween(0x00, 0xff) << 24;
+	//result |= randBetween(0x00, 0xff) << 16;
+	//result |= randBetween(0x00, 0xff) << 8;
+	//result |= 0xff;
+	//return result;
 }
 
 void DemoState::doCameraMovement(float delta)

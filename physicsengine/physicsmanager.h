@@ -43,6 +43,8 @@ public:
 	// uses the octree to get a list of bodies in a certain range
 	DArray<PhysicsBody*> getBodiesInRange(Vector3 const& min, 
 		Vector3 const& max);
+
+    static float gravity;
 private:
 	PhysicsManager();
 	~PhysicsManager();

@@ -42,6 +42,7 @@ void World::addActor(Actor* a)
 
 void World::update(float delta)
 {
+    aie::Gizmos::clear();
 	for (int i = 0; i < m_actors.getCount(); ++i)
 		if (m_actors[i]->isEnabled())
 			m_actors[i]->update(delta);
@@ -51,7 +52,6 @@ void World::draw()
 {
 	using namespace aie;
 
-	Gizmos::clear();
 
 	for (int i = 0; i < m_actors.getCount(); ++i)
 		if (m_actors[i]->isEnabled())

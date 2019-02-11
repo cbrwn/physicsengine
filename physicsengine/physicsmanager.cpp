@@ -10,6 +10,8 @@
 #include "physicsbody.h"
 #include "collideraabb.h"
 
+float PhysicsManager::gravity = 9.8f;
+
 PhysicsManager* PhysicsManager::m_instance = nullptr;
 
 PhysicsManager::PhysicsManager()

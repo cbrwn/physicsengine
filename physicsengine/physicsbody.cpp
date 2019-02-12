@@ -451,7 +451,7 @@ void PhysicsBody::checkCollision()
 
 			m_colliding.add(body);
 
-            drawSphere(point, 0.2f, Vector4(1,0,0,1));
+            drawSphere(point, 0.05f, Vector4(1,0,0,1));
 		}
 	}
 }
@@ -541,7 +541,6 @@ void PhysicsBody::resolveCollision(Collider* other, float pen, Vector3 axis)
 	// give a percentage of the velocity to the other object
 	newVelB -= pushBackA * passOnA;
 	newVelA -= pushBackB * passOnB;
-
 	// update our velocities
 	setVelocity(newVelA);
 	otherBody->setVelocity(newVelB);

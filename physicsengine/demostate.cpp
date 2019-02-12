@@ -34,7 +34,14 @@ void DemoState::onEnter()
 		m_world->addActor(b);
 	}
 
-	m_world->addActor(new Ball(Vector3(4, 3, 0), 1.0f, 0xffffffff));
+	for (int i = 0; i < 10; ++i) {
+		Vector3 siz(randBetween(0.1f, 0.8f), randBetween(0.1f, 0.8f), randBetween(0.1f, 0.8f));
+		Vector3 pos(randBetween(-5.0f, 5.0f), randBetween(1.1f, 5.8f), randBetween(-5.1f, 5.8f));
+		Box* b = new Box(pos, siz, randomColor());
+		b->getBody()->setMass(randBetween(0.1f, 2.0f));
+		b->getBody()->setStatic(false);
+		m_world->addActor(b);
+	}
 
 	m_world->getCamera()->setPosition(Vector3(0, 6, 20));
 	m_world->getCamera()->setPitch(-0.2f);
@@ -116,7 +123,7 @@ unsigned int DemoState::randomColor()
     unsigned int result = hsb(randBetween(0.0f, 1.0f), 1.0f, 1.0f);
 
     result &= 0xffffff00;
-    result |= 0x44;
+    result |= 0xff;
 
     return result;
 	//unsigned int result = 0;
@@ -153,16 +160,16 @@ void DemoState::doCameraMovement(float delta)
 	if (input->isKeyDown(aie::INPUT_KEY_D))
 		movement.x += 1.0f;
 	if (input->isKeyDown(aie::INPUT_KEY_Q))
-		movement.y -= 2.0f;
+		movement.y -= 1.0f;
 	if (input->isKeyDown(aie::INPUT_KEY_E))
-		movement.y += 2.0f;
+		movement.y += 1.0f;
 
 	if (input->isMouseButtonDown(aie::INPUT_MOUSE_BUTTON_RIGHT)) {
 		mouseDelta /= 500.0f;
 		c->setRotation(c->getRotation() + Vector3(mouseDelta.y, -mouseDelta.x, 0));
 	}
 
-	if (movement.magnitudeSquared() > 2.0f)
+	if (movement.magnitudeSquared() > 1.0f)
 		movement.normalise();
 	Vector3 offset;
 	offset += camTransform.getForward() * movement.z;

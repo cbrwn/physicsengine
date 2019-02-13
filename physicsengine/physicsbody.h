@@ -164,6 +164,6 @@ private:
 
 	// resolves collision by pushing objects out of each other and applying
 	// relevant forces
-	void resolveCollision(Collider* other, float pen, Vector3 axis);
+	void resolveCollision(Collider* other, float pen, Vector3 axis, Vector3 vertex);
 
 };

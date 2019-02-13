@@ -25,7 +25,7 @@ PhysicsBody::PhysicsBody(Collider* collider)
 
 	// default values
 	m_zone = false;
-	m_debug = false;
+	m_debug = true;
 	m_asleep = false;
 	m_static = false;
 	m_enabled = true;
@@ -88,13 +88,13 @@ void PhysicsBody::update(float delta)
 		// check for sleeping
 		// by checking how much it's moved
 		Vector3 dif = m_stillPos - newPos;
-		if(dif.magnitudeSquared() < 0.1f)
+		if (dif.magnitudeSquared() < 0.1f)
 		{
 			// body hasn't moved much, keep a timer on that
 			m_stillTime += delta;
 			// if we haven't moved for a long time, it's safe to put this
 			// body to sleep!
-			if(m_stillTime >= 3.0f)
+			if (m_stillTime >= 3.0f)
 				m_asleep = true;
 		}
 		else
@@ -118,7 +118,7 @@ void PhysicsBody::update(float delta)
 		m_collider->drawNormals();
 
 		// draw its broad phase collision box
-		aie::Gizmos::addAABB(toVec3(m_transform.getPosition()), 
+		aie::Gizmos::addAABB(toVec3(m_transform.getPosition()),
 			toVec3(getBroadExtents()), glm::vec4(1, 0, 0, 1));
 	}
 
@@ -185,7 +185,7 @@ Vector3 PhysicsBody::getPosition()
 
 void PhysicsBody::addForce(Vector3 force)
 {
-	wakeUp();
+	//wakeUp();
 	m_velocity += force;// *m_mass;
 }
 
@@ -440,23 +440,24 @@ void PhysicsBody::checkCollision()
 
 		// perform SAT collision and resolve it if it happened
 		Vector3 axis;
-        Vector3 point;
+		Vector3 point;
 		float penetration;
 		if (isCollidingSAT(acol, penetration, axis, point))
 		{
 			if (!m_zone && !body->isZone())
-				resolveCollision(acol, penetration, axis);
+				resolveCollision(acol, penetration, axis, point);
 			if (m_collideCallback)
 				m_collideCallback(body);
 
 			m_colliding.add(body);
 
-            drawSphere(point, 0.05f, Vector4(1,0,0,1));
+			if(m_debug)
+				drawSphere(point, 0.05f, Vector4(1, 0, 0, 1));
 		}
 	}
 }
 
-void PhysicsBody::resolveCollision(Collider* other, float pen, Vector3 axis)
+void PhysicsBody::resolveCollision(Collider* other, float pen, Vector3 axis, Vector3 vertex)
 {
 	// slightly shorter reference to the other object's body
 	PhysicsBody* otherBody = other->body;
@@ -466,7 +467,7 @@ void PhysicsBody::resolveCollision(Collider* other, float pen, Vector3 axis)
 	if (m_debug)
 	{
 		aie::Gizmos::addLine(toVec3(m_transform.getPosition()),
-			toVec3(m_transform.getPosition()+ axis * 5.0f), 
+			toVec3(m_transform.getPosition() + axis * 5.0f),
 			glm::vec4(1, 0, 0, 1));
 	}
 
@@ -529,21 +530,13 @@ void PhysicsBody::resolveCollision(Collider* other, float pen, Vector3 axis)
 		passOnB = 0.0f;
 	}
 
-	// make new vectors to make calculations easier to read
-	Vector3 newVelA = getVelocity();
-	Vector3 newVelB = otherBody->getVelocity();
+	Vector3 forceA, forceB;
 
-	// this is actually subtracting the velocity from itself,
-	//		since pushBack is in the direction of the normal
-	newVelA += pushBackA * passOnA;
-	newVelB += pushBackB * passOnB;
+	forceA = (pushBackA * passOnA) - (pushBackB * passOnB);
+	forceB = (pushBackB * passOnB) - (pushBackA * passOnA);
 
-	// give a percentage of the velocity to the other object
-	newVelB -= pushBackA * passOnA;
-	newVelA -= pushBackB * passOnB;
-	// update our velocities
-	setVelocity(newVelA);
-	otherBody->setVelocity(newVelB);
+	addForce(forceA);
+	otherBody->addForce(forceB);
 
 	// temporary friction stuff
 	const float friction = 0.1f;
@@ -639,20 +632,20 @@ bool PhysicsBody::isCollidingSAT(Collider* other, float& penOut, Vector3& axisOu
 		otherPoints.add(pt);
 	}
 
-    DArray<Vector3> penPoints;
+	DArray<Vector3> penPoints;
 	DArray<float> penetrations;
 	// start checking for overlaps!
 	for (int i = 0; i < axes.getCount(); ++i)
 	{
 		Vector3 axis = axes[i];
 
-		float mina =  INFINITY;
+		float mina = INFINITY;
 		float maxa = -INFINITY;
-		float minb =  INFINITY;
+		float minb = INFINITY;
 		float maxb = -INFINITY;
 
-        int minIndex = -1;
-        int maxIndex = -1;
+		int minIndex = -1;
+		int maxIndex = -1;
 		// project each vertex of this shape onto the current axis
 		for (int j = 0; j < thisPoints.getCount(); ++j)
 		{
@@ -662,13 +655,13 @@ bool PhysicsBody::isCollidingSAT(Collider* other, float& penOut, Vector3& axisOu
 			// keep track of it if it's lower than min
 			if (dot < mina) {
 				mina = dot;
-                minIndex = j;
-            }
+				minIndex = j;
+			}
 			// or higher than max
 			if (dot > maxa) {
 				maxa = dot;
-                maxIndex = j;
-            }
+				maxIndex = j;
+			}
 		}
 		// project each vertex of the other shape onto the current axis
 		for (int j = 0; j < otherPoints.getCount(); ++j)
@@ -686,12 +679,12 @@ bool PhysicsBody::isCollidingSAT(Collider* other, float& penOut, Vector3& axisOu
 
 		// get the amount that these objects overlap on this axis
 		//float overlap = fminf(maxa - minb, maxb - mina);
-        float overlap = maxa - minb;
-        int pointIndex = maxIndex;
-        if(maxb - mina < overlap) {
-            overlap = maxb - mina;
-            pointIndex = minIndex;
-        }
+		float overlap = maxa - minb;
+		int pointIndex = maxIndex;
+		if (maxb - mina < overlap) {
+			overlap = maxb - mina;
+			pointIndex = minIndex;
+		}
 
 		// they're not colliding if there's no overlap on an axis
 		if (overlap <= 0.0f)
@@ -699,8 +692,8 @@ bool PhysicsBody::isCollidingSAT(Collider* other, float& penOut, Vector3& axisOu
 
 		// keep track of this amount of overlap to find the axis of collision
 		penetrations.add(overlap);
-        // and keep track of the point most responsible for this overlap
-        penPoints.add(thisPoints[pointIndex]);
+		// and keep track of the point most responsible for this overlap
+		penPoints.add(thisPoints[pointIndex]);
 	}
 
 	// get the lowest penetration's index
@@ -711,8 +704,8 @@ bool PhysicsBody::isCollidingSAT(Collider* other, float& penOut, Vector3& axisOu
 
 	// output this penetration value
 	penOut = penetrations[lowest];
-    // and that penetration's most responsible point
-    pointOut = penPoints[lowest];
+	// and that penetration's most responsible point
+	pointOut = penPoints[lowest];
 
 	// use the objects' relative positions to figure out if the collision
 	// is happening in the same direction as the axis or not
@@ -729,7 +722,7 @@ bool PhysicsBody::isCollidingSAT(Collider* other, float& penOut, Vector3& axisOu
 	return true;
 }
 
-bool PhysicsBody::rayTestBroad(Vector3 const& start, Vector3 const& dir, 
+bool PhysicsBody::rayTestBroad(Vector3 const& start, Vector3 const& dir,
 	float* outDist)
 {
 	Matrix4 m = getTransformMatrix();

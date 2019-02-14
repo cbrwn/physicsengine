@@ -25,7 +25,7 @@ PhysicsBody::PhysicsBody(Collider* collider)
 
 	// default values
 	m_zone = false;
-	m_debug = true;
+	m_debug = false;
 	m_asleep = false;
 	m_static = false;
 	m_enabled = true;
@@ -38,9 +38,11 @@ PhysicsBody::PhysicsBody(Collider* collider)
 
 	// physical values
 	m_drag = 0.0f;
+	m_angularDrag = 1.0f;
 	m_mass = 1.0f;
 	m_bounce = 0.0f;
 	m_friction = 0.1f;
+	m_momentOfInertia = 1.0f;
 }
 
 PhysicsBody::~PhysicsBody()
@@ -66,29 +68,33 @@ void PhysicsBody::update(float delta)
 		// apply gravity
 		if (m_useGravity)
 			m_velocity.y -= m_gravityStrength * PhysicsManager::gravity * delta;
+
+		// drags
 		m_velocity -= (m_velocity * m_drag) * delta;
+		m_angularVelocity -= (m_angularVelocity * m_angularDrag) * delta;
+
+		// apply minimum velocity thresholds
+		if (m_velocity.magnitudeSquared() <
+			MIN_LINEAR_THRESHOLD*MIN_LINEAR_THRESHOLD)
+			m_velocity.set(0, 0, 0);
+		if (m_angularVelocity.magnitudeSquared() <
+			MIN_ROTATIONAL_THRESHOLD*MIN_ROTATIONAL_THRESHOLD)
+			m_angularVelocity.set(0, 0, 0);
 
 		// apply velocities
 		Vector3 position = m_transform.getPosition();
 		Vector3 newPos = position + (m_velocity * delta);
 		m_transform.setPosition(newPos);
 
-		Matrix4 xrot, yrot, zrot;
 		Vector3 av = m_angularVelocity * delta;
-		xrot.setRotateX(av.x);
-		yrot.setRotateY(av.y);
-		zrot.setRotateZ(av.z);
-		Matrix4 rot = xrot * yrot * zrot;
-		m_transform = m_transform * rot;
-
-		//Vector3 rotation = m_transform.getAngles();
-		//rotation += m_angularVelocity * delta;
-		//m_transform.setRotate(rotation);
+		this->rotate(av);
 
 		// check for sleeping
 		// by checking how much it's moved
 		Vector3 dif = m_stillPos - newPos;
-		if (dif.magnitudeSquared() < 0.1f)
+		if (dif.magnitudeSquared() < 0.1f &&
+			m_velocity.magnitudeSquared() < 0.1f &&
+			m_angularVelocity.magnitudeSquared() < 0.1f)
 		{
 			// body hasn't moved much, keep a timer on that
 			m_stillTime += delta;
@@ -183,10 +189,17 @@ Vector3 PhysicsBody::getPosition()
 	return m_transform.getPosition();
 }
 
-void PhysicsBody::addForce(Vector3 force)
+void PhysicsBody::addForce(Vector3 force, Vector3 pos)
 {
-	//wakeUp();
-	m_velocity += force;// *m_mass;
+	m_velocity += force;
+
+	Vector3 deltaAng;
+	deltaAng.z += (force.y * pos.x - force.x * pos.y);
+	deltaAng.y += (force.z * pos.x - force.x * pos.z);
+	deltaAng.x += (force.y * pos.z - force.z * pos.y);
+
+	deltaAng /= m_momentOfInertia;
+	m_angularVelocity += deltaAng;
 }
 
 Vector3 PhysicsBody::transformPoint(Vector3 const& pt)
@@ -451,7 +464,7 @@ void PhysicsBody::checkCollision()
 
 			m_colliding.add(body);
 
-			if(m_debug)
+			if (m_debug)
 				drawSphere(point, 0.05f, Vector4(1, 0, 0, 1));
 		}
 	}
@@ -470,6 +483,8 @@ void PhysicsBody::resolveCollision(Collider* other, float pen, Vector3 axis, Vec
 			toVec3(m_transform.getPosition() + axis * 5.0f),
 			glm::vec4(1, 0, 0, 1));
 	}
+
+	// spinny stuff
 
 	// get the total mass so we can compare them
 	float totalMass = getMass() + otherBody->getMass();
@@ -535,8 +550,8 @@ void PhysicsBody::resolveCollision(Collider* other, float pen, Vector3 axis, Vec
 	forceA = (pushBackA * passOnA) - (pushBackB * passOnB);
 	forceB = (pushBackB * passOnB) - (pushBackA * passOnA);
 
-	addForce(forceA);
-	otherBody->addForce(forceB);
+	addForce(forceA, vertex - getPosition());
+	otherBody->addForce(forceB, vertex - otherBody->getPosition());
 
 	// temporary friction stuff
 	const float friction = 0.1f;

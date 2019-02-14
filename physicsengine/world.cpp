@@ -42,10 +42,10 @@ void World::addActor(Actor* a)
 
 void World::update(float delta)
 {
-    aie::Gizmos::clear();
 	for (int i = 0; i < m_actors.getCount(); ++i)
 		if (m_actors[i]->isEnabled())
 			m_actors[i]->update(delta);
+    aie::Gizmos::clear();
 }
 
 void World::draw()
@@ -56,6 +56,8 @@ void World::draw()
 	for (int i = 0; i < m_actors.getCount(); ++i)
 		if (m_actors[i]->isEnabled())
 			m_actors[i]->draw();
+
+	//PhysicsManager::getInstance()->drawTree(PhysicsManager::getInstance()->getTree());
 
 	float windowWidth = (float)m_game->getWindowWidth();
 	float windowHeight = (float)m_game->getWindowHeight();
@@ -68,6 +70,7 @@ void World::draw()
 	auto glmView = toMat4(m_camera->getViewMatrix());
 
 	Gizmos::draw(glmProj * glmView);
+
 }
 
 ObjectPool* World::getPool()

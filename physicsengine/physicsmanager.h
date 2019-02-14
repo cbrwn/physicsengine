@@ -45,6 +45,9 @@ public:
 		Vector3 const& max);
 
     static float gravity;
+
+	// draws an octree for debug purposes
+	void drawTree(Octree<PhysicsBody*>* tree);
 private:
 	PhysicsManager();
 	~PhysicsManager();
@@ -54,6 +57,4 @@ private:
 	DArray<PhysicsBody*> m_bodies;
 	Octree<PhysicsBody*>* m_tree;
 
-	// draws an octree for debug purposes
-	void drawTree(Octree<PhysicsBody*>* tree);
 };

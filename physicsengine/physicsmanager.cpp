@@ -18,8 +18,8 @@ PhysicsManager::PhysicsManager()
 {
 	// arbitrary extent of the octree
 	// no collision will work outside of this range
-	const float treeSize = 3000.0f;
-	m_tree = new Octree<PhysicsBody*>(8,
+	const float treeSize = 100.0f;
+	m_tree = new Octree<PhysicsBody*>(3,
 		{ -treeSize, -treeSize, -treeSize,
 		treeSize, treeSize, treeSize });
 }

@@ -12,6 +12,9 @@
 struct Collider;
 struct ColliderAABB;
 
+#define MIN_LINEAR_THRESHOLD 0.01f
+#define MIN_ROTATIONAL_THRESHOLD 0.01f
+
 class PhysicsBody
 {
 public:
@@ -46,7 +49,7 @@ public:
 	inline Vector3 getAngularVelocity() { return m_angularVelocity; }
 
 	// adds some velocity
-	void addForce(Vector3 force);
+	void addForce(Vector3 force, Vector3 pos);
 
 	// set physical properties of the body
 	// bounce and friction aren't implemented yet!
@@ -122,6 +125,9 @@ private:
 	Vector3 m_velocity;
 	Vector3 m_angularVelocity;
 
+	float m_drag;
+	float m_angularDrag;
+
 	Matrix4 m_transform;
 
 	// store broad extents so we don't have to calculate them each time we
@@ -129,10 +135,10 @@ private:
 	Vector3 m_broadExtents;
 
 	// physical properties
-	float m_drag;
 	float m_mass;
 	float m_bounce;
 	float m_friction;
+	float m_momentOfInertia;
 
 	// list of currently colliding bodies
 	DArray<PhysicsBody*> m_colliding;

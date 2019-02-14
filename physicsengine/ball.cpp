@@ -24,5 +24,5 @@ void Ball::update(float delta) {
 void Ball::draw() {
 	Vector4 c = intToVector(m_color);
 
-	drawSphere(Vector3(0, 0, 0), m_radius, c, &m_globalTransform);
+	drawSphere(Vector3(0, 0, 0), m_radius, c, &m_globalTransform, 8, 8);
 }

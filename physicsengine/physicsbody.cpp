@@ -179,7 +179,7 @@ void PhysicsBody::rotate(Vector3 const& v)
 	yRot.setRotateY(v.y);
 	zRot.setRotateZ(v.z);
 
-	Matrix4 rotationMatrix = xRot * yRot * zRot;
+	Matrix4 rotationMatrix = zRot * yRot * xRot;
 
 	m_transform = m_transform * rotationMatrix;
 }
@@ -193,13 +193,24 @@ void PhysicsBody::addForce(Vector3 force, Vector3 pos)
 {
 	m_velocity += force;
 
-	Vector3 deltaAng;
-	deltaAng.z += (force.y * pos.x - force.x * pos.y);
-	deltaAng.y += (force.z * pos.x - force.x * pos.z);
-	deltaAng.x += (force.y * pos.z - force.z * pos.y);
+	Vector3 deltaAng = Vector3::cross(force, pos);
+	//deltaAng.z += (force.y * pos.x - force.x * pos.y);
+	//deltaAng.y += (force.z * pos.x - force.x * pos.z);
+	//deltaAng.x += (force.y * pos.z - force.z * pos.y);
 
-	deltaAng /= m_momentOfInertia;
-	m_angularVelocity += deltaAng;
+	//deltaAng /= m_momentOfInertia;
+	deltaAng.x = 0.0f;
+	deltaAng.y = 0.0f;
+	if (deltaAng.magnitudeSquared() > 0.001f)
+		m_angularVelocity -= deltaAng;
+	if (m_debug && pos.magnitudeSquared() > 0.0f)
+	{
+		printf("(%.2f, %.2f, %.2f)\n", force.x, force.y, force.z);
+		Vector3 p = pos + getPosition();
+		aie::Gizmos::addLine(toVec3(p),
+			toVec3(p + force.normalised() * 5.0f),
+			glm::vec4(0, 1, 0, 1));
+	}
 }
 
 Vector3 PhysicsBody::transformPoint(Vector3 const& pt)
@@ -485,6 +496,33 @@ void PhysicsBody::resolveCollision(Collider* other, float pen, Vector3 axis, Vec
 	}
 
 	// spinny stuff
+	if (false) {
+
+		Vector3 perp = Vector3::cross(axis, Vector3(0, 1, 0));
+
+		float r1 = (vertex - getPosition()).dot(-1.0 * perp);
+		float r2 = (vertex - other->body->getPosition()).dot(perp);
+
+		Vector3 v1;
+		v1.x = m_velocity.dot(axis) - (r1 * m_angularVelocity.x);
+		v1.y = m_velocity.dot(axis) - (r1 * m_angularVelocity.y);
+		v1.z = m_velocity.dot(axis) - (r1 * m_angularVelocity.z);
+
+		Vector3 v2;
+		v2.x = other->body->getVelocity().dot(axis) - (r2 * other->body->getAngularVelocity().x);
+		v2.y = other->body->getVelocity().dot(axis) - (r2 * other->body->getAngularVelocity().y);
+		v2.z = other->body->getVelocity().dot(axis) - (r2 * other->body->getAngularVelocity().z);
+
+		if (v1.dot(v2) > 0.0f) {
+			float mass1 = 1.0f / (1.0f / getMass() + (r1*r1) / m_momentOfInertia);
+			float mass2 = 1.0f / (1.0f / other->body->getMass() + (r2*r2) / other->body->getMomentOfInertia());
+
+			Vector3 force = mass1 * mass2 / (mass1 + mass2)*(v1*v2)*axis;
+
+			addForce(force*-1.0f, vertex - getPosition());
+			other->body->addForce(force, vertex - other->body->getPosition());
+		}
+	}
 
 	// get the total mass so we can compare them
 	float totalMass = getMass() + otherBody->getMass();

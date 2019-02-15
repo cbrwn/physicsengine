@@ -8,7 +8,7 @@
 
 #include "game.h"
 #include "util.h"
-#include "actor.h"
+#include "camera.h"
 #include "camera.h"
 #include "objectpool.h"
 #include "physicsbody.h"

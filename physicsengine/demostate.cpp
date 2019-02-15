@@ -41,6 +41,8 @@ void DemoState::onEnter()
 		b->getBody()->setMass(randBetween(0.1f, 2.0f));
 		b->getBody()->setStatic(false);
 		m_world->addActor(b);
+		if (i == 0)
+			b->getBody()->setDebug(true);
 	}
 
 	const float height = 1.0f;
@@ -51,6 +53,9 @@ void DemoState::onEnter()
 		b->getBody()->setMass(1.0f);
 		b->getBody()->setStatic(false);
 		m_world->addActor(b);
+
+		if (i == 0)
+			b->getBody()->setDebug(true);
 	}
 
 	Ball* staticBall = new Ball(Vector3(8, 3, 8), 1.5f, 0xffffffff);

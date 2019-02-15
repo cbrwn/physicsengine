@@ -9,11 +9,13 @@
 #include <vector3.h>
 #include <functional> // for std::function
 
+#include <glm/ext.hpp>
+
 struct Collider;
 struct ColliderAABB;
 
-#define MIN_LINEAR_THRESHOLD 0.01f
-#define MIN_ROTATIONAL_THRESHOLD 0.01f
+#define MIN_LINEAR_THRESHOLD 0.1f
+#define MIN_ROTATIONAL_THRESHOLD 0.1f
 
 class PhysicsBody
 {
@@ -63,6 +65,7 @@ public:
 	inline float getMass() { return m_mass; }
 	inline float getBounce() { return m_bounce; }
 	inline float getFriction() { return m_friction; }
+	inline float getMomentOfInertia() { return m_momentOfInertia; }
 
 	// change whether or not this body is affected by gravity
 	void setUseGravity(bool g) { m_useGravity = g; }
@@ -118,6 +121,8 @@ public:
 
 	// stops the body from sleeping
 	void wakeUp();
+
+	glm::quat m_rotation;
 
 private:
 	Collider* m_collider;

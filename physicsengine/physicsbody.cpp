@@ -41,8 +41,10 @@ PhysicsBody::PhysicsBody(Collider* collider)
 	m_angularDrag = 1.0f;
 	m_mass = 1.0f;
 	m_bounce = 0.0f;
-	m_friction = 0.1f;
 	m_momentOfInertia = 1.0f;
+
+	m_friction = 0.05f;
+    m_frictionMode = FRICTION_AVG;
 }
 
 PhysicsBody::~PhysicsBody()
@@ -555,8 +557,21 @@ void PhysicsBody::resolveCollision(Collider* other, float pen, Vector3 axis, Vec
 	addForce(forceA, vertex - getPosition());
 	otherBody->addForce(forceB, vertex - otherBody->getPosition());
 
-	// temporary friction stuff
-	const float friction = 0.1f;
+    // friction
+    float friction = 0.0f;
+    switch(m_frictionMode) {
+        case FRICTION_MIN:
+            friction = fminf(getFriction(), otherBody->getFriction());
+            break;
+        case FRICTION_MAX:
+            friction = fmaxf(getFriction(), otherBody->getFriction());
+            break;
+        case FRICTION_AVG:
+            friction = (getFriction() + otherBody->getFriction())/2.0f;
+            break;
+        default:
+            printf("unhandled friction mode %n\n", m_frictionMode);
+    }
 	m_velocity -= m_velocity * friction;
 
 	// update both bodies' transforms

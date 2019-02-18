@@ -14,6 +14,12 @@ struct Collider;
 #define MIN_LINEAR_THRESHOLD 0.1f
 #define MIN_ROTATIONAL_THRESHOLD 0.1f
 
+enum FrictionMode {
+    FRICTION_MIN,
+    FRICTION_MAX,
+    FRICTION_AVG
+};
+
 class PhysicsBody
 {
 public:
@@ -137,8 +143,10 @@ private:
 	// physical properties
 	float m_mass;
 	float m_bounce;
-	float m_friction;
 	float m_momentOfInertia;
+
+	float m_friction;
+    FrictionMode m_frictionMode;
 
 	// list of currently colliding bodies
 	DArray<PhysicsBody*> m_colliding;

@@ -9,10 +9,7 @@
 #include <vector3.h>
 #include <functional> // for std::function
 
-#include <glm/ext.hpp>
-
 struct Collider;
-struct ColliderAABB;
 
 #define MIN_LINEAR_THRESHOLD 0.1f
 #define MIN_ROTATIONAL_THRESHOLD 0.1f
@@ -106,7 +103,7 @@ public:
 
 	// specific broad phase collision functions
 	static bool AABBvsAABB(Collider* c1, Collider* c2);
-	static bool AABBvsSphere(Collider* c1, Collider* c2);
+	static bool AABBvsSphere(Collider* _aabb, Collider* _sphere);
 	static bool SpherevsSphere(Collider* c1, Collider* c2);
 
 	// general broad phase collision detection
@@ -121,8 +118,6 @@ public:
 
 	// stops the body from sleeping
 	void wakeUp();
-
-	glm::quat m_rotation;
 
 private:
 	Collider* m_collider;

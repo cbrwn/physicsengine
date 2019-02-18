@@ -153,7 +153,6 @@ void PhysicsBody::setTransform(Matrix4 const& m)
 void PhysicsBody::setPosition(Vector3 const& v)
 {
 	m_transform.setPosition(v);
-	//m_position = v;
 	updateBroadExtents();
 }
 
@@ -193,19 +192,16 @@ void PhysicsBody::addForce(Vector3 force, Vector3 pos)
 {
 	m_velocity += force;
 
-	Vector3 deltaAng = Vector3::cross(force, pos);
-	//deltaAng.z += (force.y * pos.x - force.x * pos.y);
-	//deltaAng.y += (force.z * pos.x - force.x * pos.z);
-	//deltaAng.x += (force.y * pos.z - force.z * pos.y);
+    // abandon all hope for rotation
+    return;
 
+	Vector3 deltaAng = Vector3::cross(force, pos);
 	//deltaAng /= m_momentOfInertia;
-	deltaAng.x = 0.0f;
-	deltaAng.y = 0.0f;
+    
 	if (deltaAng.magnitudeSquared() > 0.001f)
 		m_angularVelocity -= deltaAng;
 	if (m_debug && pos.magnitudeSquared() > 0.0f)
 	{
-		printf("(%.2f, %.2f, %.2f)\n", force.x, force.y, force.z);
 		Vector3 p = pos + getPosition();
 		aie::Gizmos::addLine(toVec3(p),
 			toVec3(p + force.normalised() * 5.0f),
@@ -279,42 +275,10 @@ bool PhysicsBody::AABBvsAABB(Collider* c1, Collider* c2)
 	return true;
 }
 
-bool PhysicsBody::AABBvsSphere(Collider* c1, Collider* c2)
+bool PhysicsBody::AABBvsSphere(Collider* _aabb, Collider* _sphere)
 {
-	// parameters aren't strict with which order these should be passed in
-	// let's try to figure it out
-	ColliderSphere* sphere = nullptr;
-	ColliderAABB* aabb = nullptr;
-
-	// figure out the type of c1
-	switch (c1->type)
-	{
-	case COLLIDER_AABB:
-		aabb = (ColliderAABB*)c1;
-		break;
-	case COLLIDER_SPHERE:
-		sphere = (ColliderSphere*)c1;
-		break;
-	default:
-		// we don't want to continue if it's not an AABB or a sphere
-		assert(false && "Invalid type passed into AABBvsSphere");
-		return false;
-	}
-
-	// figure out the type of c2
-	switch (c2->type)
-	{
-	case COLLIDER_AABB:
-		aabb = (ColliderAABB*)c2;
-		break;
-	case COLLIDER_SPHERE:
-		sphere = (ColliderSphere*)c2;
-		break;
-	default:
-		// we don't want to continue if it's not an AABB or a sphere
-		assert(false && "Invalid type passed into AABBvsSphere");
-		return false;
-	}
+	ColliderSphere* sphere = (ColliderSphere*)_sphere;
+	ColliderAABB* aabb = (ColliderAABB*)_aabb;
 
 	// make sure BOTH colliders aren't null
 	assert(sphere && aabb);

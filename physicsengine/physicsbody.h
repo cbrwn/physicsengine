@@ -62,6 +62,7 @@ public:
 	void setMass(float m) { m_mass = m; }
 	void setBounce(float b) { m_bounce = b; }
 	void setFriction(float f) { m_friction = f; }
+	void setFrictionMode(FrictionMode m) { m_frictionMode = m; }
 
 	// get physical properties of the body
 	inline float getDrag() { return m_drag; }
@@ -69,6 +70,7 @@ public:
 	inline float getBounce() { return m_bounce; }
 	inline float getFriction() { return m_friction; }
 	inline float getMomentOfInertia() { return m_momentOfInertia; }
+	inline FrictionMode getFrictionMode() { return m_frictionMode; }
 
 	// change whether or not this body is affected by gravity
 	void setUseGravity(bool g) { m_useGravity = g; }

@@ -43,7 +43,7 @@ PhysicsBody::PhysicsBody(Collider* collider)
 	m_bounce = 0.0f;
 	m_momentOfInertia = 1.0f;
 
-	m_friction = 0.0f;
+	m_friction = 0.05f;
     m_frictionMode = FRICTION_AVG;
 }
 

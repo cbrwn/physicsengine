@@ -12,6 +12,7 @@
 
  // states
 #include "basestate.h"
+#include "gamestate.h"
 #include "demostate.h"
 
 Game::Game() {}
@@ -32,8 +33,8 @@ bool Game::startup()
 	Gizmos::create(100000, 500000, 10000, 10000);
 
 	m_currentState = nullptr;
-	//m_states.add(new GameState(this));
-	m_states.add(new DemoState(this));
+	m_states.add(new GameState(this));
+	//m_states.add(new DemoState(this));
 
 	changeState(GAMESTATE_GAME);
 

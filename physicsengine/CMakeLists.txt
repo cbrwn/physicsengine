@@ -11,6 +11,7 @@ add_executable(${PROJECT_NAME}
     plane.cpp
     camera.cpp
     gamehud.cpp
+	gamestate.cpp
     basestate.cpp
     objectpool.cpp
     collidercone.cpp
@@ -28,6 +29,7 @@ add_executable(${PROJECT_NAME}
     game.cpp
     main.cpp
     )
+
 target_link_libraries(${PROJECT_NAME} aieBootstrap mylib)
 set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME game)
 

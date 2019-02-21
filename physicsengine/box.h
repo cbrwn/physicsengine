@@ -8,6 +8,8 @@
 
 class PhysicsBody;
 
+#define BOX_GROW_TIME 1.8f
+
 class Box : public PhysicsActor
 {
 public:
@@ -18,6 +20,8 @@ public:
 
 private:
 	bool m_drawLines;
+
+	float m_growTime;
 
 	unsigned int m_color;
 	Vector3 m_size;

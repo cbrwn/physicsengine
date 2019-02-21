@@ -12,6 +12,13 @@ Vector3::Vector3()
 Vector3::Vector3(float x, float y, float z)
 	: x(x), y(y), z(z) { }
 
+Vector3::Vector3(int x, int y, int z)
+{
+	this->x = (float)x;
+	this->y = (float)y;
+	this->z = (float)z;
+}
+
 Vector3::Vector3(const Vector3& vec)
 {
 	x = vec.x;

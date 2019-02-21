@@ -43,7 +43,7 @@ PhysicsBody::PhysicsBody(Collider* collider)
 	m_bounce = 0.0f;
 	m_momentOfInertia = 1.0f;
 
-	m_friction = 0.05f;
+	m_friction = 0.0f;
     m_frictionMode = FRICTION_AVG;
 }
 
@@ -570,7 +570,7 @@ void PhysicsBody::resolveCollision(Collider* other, float pen, Vector3 axis, Vec
             friction = (getFriction() + otherBody->getFriction())/2.0f;
             break;
         default:
-            printf("unhandled friction mode %n\n", m_frictionMode);
+            printf("unhandled friction mode %i\n", m_frictionMode);
     }
 	m_velocity -= m_velocity * friction;
 

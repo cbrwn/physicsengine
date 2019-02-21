@@ -12,7 +12,6 @@
 
  // states
 #include "basestate.h"
-#include "gamestate.h"
 #include "demostate.h"
 
 Game::Game() {}

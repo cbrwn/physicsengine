@@ -68,7 +68,7 @@ ColliderCylinder::ColliderCylinder(float height, float radius, int segments)
 		float normalAngle = (i * segmentSize) + segmentSize / 2.0f;
 
 		// then sin/cos that angle and we have our super simple normals :)
-		normals.add(Vector3(sinf(normalAngle), 0, 
+		normals.add(Vector3(sinf(normalAngle), 0.0f, 
 			cosf(normalAngle)).normalised());
 	}
 }

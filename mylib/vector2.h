@@ -20,6 +20,7 @@ struct Vector2
 	 * @brief Makes a 2D vector with a set of values
 	 */
 	MYLIB_SPEC Vector2(float x, float y);
+	MYLIB_SPEC Vector2(int x, int y);
 	MYLIB_SPEC ~Vector2() = default;
 
 	// copy constructor

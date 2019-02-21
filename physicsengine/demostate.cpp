@@ -102,7 +102,7 @@ void DemoState::update(float delta)
 			m_grabbed->wakeUp();
 			m_grabbed->setDrag(5.0f);
 
-			m_lastScroll = input->getMouseScroll();
+			m_lastScroll = (float)input->getMouseScroll();
 		}
 	}
 
@@ -110,7 +110,7 @@ void DemoState::update(float delta)
 		Vector3 rayStart, rayDir;
 		m_world->getMouseRay(&rayStart, &rayDir);
 
-		float thisScroll = input->getMouseScroll();
+		float thisScroll = (float)input->getMouseScroll();
 		m_targetMagnitude += thisScroll - m_lastScroll;
 		m_lastScroll = thisScroll;
 
@@ -185,7 +185,7 @@ void DemoState::doCameraMovement(float delta)
 
 	if (input->isMouseButtonDown(aie::INPUT_MOUSE_BUTTON_RIGHT)) {
 		mouseDelta /= 500.0f;
-		c->setRotation(c->getRotation() + Vector3(mouseDelta.y, -mouseDelta.x, 0));
+		c->setRotation(c->getRotation() + Vector3(mouseDelta.y, -mouseDelta.x, 0.0f));
 	}
 
 	if (movement.magnitudeSquared() > 1.0f)

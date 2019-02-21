@@ -20,6 +20,7 @@ struct Vector3
 	 * @brief Makes a 3D vector with a set of values
 	 */
 	MYLIB_SPEC Vector3(float x, float y, float z);
+	MYLIB_SPEC Vector3(int x, int y, int z);
 	MYLIB_SPEC ~Vector3() = default;
 
 	// copy constructor

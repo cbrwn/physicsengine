@@ -5,28 +5,28 @@ project(physicsengine)
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_SOURCE_DIR})
 
 add_executable(${PROJECT_NAME}
-    main.cpp
-    actor.cpp
-    ball.cpp
-    basestate.cpp
     box.cpp
-    camera.cpp
-    collider.cpp
-    collideraabb.cpp
-    collidercone.cpp
-    collidercylinder.cpp
-    collidersphere.cpp
-    demostate.cpp
-    game.cpp
-    gamehud.cpp
-    objectpool.cpp
-    physicsactor.cpp
-    physicsbody.cpp
-    physicsmanager.cpp
-    plane.cpp
-    shapes.cpp
+    ball.cpp
     util.cpp
+    plane.cpp
+    camera.cpp
+    gamehud.cpp
+    basestate.cpp
+    objectpool.cpp
+    collidercone.cpp
+    physicsactor.cpp
+    collidersphere.cpp
+    collidercylinder.cpp
+    physicsmanager.cpp
+    collideraabb.cpp
+    physicsbody.cpp
+    demostate.cpp
+    collider.cpp
+    shapes.cpp
     world.cpp
+    actor.cpp
+    game.cpp
+    main.cpp
     )
 target_link_libraries(${PROJECT_NAME} aieBootstrap mylib)
 set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME game)

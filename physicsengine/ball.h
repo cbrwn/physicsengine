@@ -5,7 +5,7 @@
 class Ball : public PhysicsActor {
 
 public:
-	Ball(Vector3 pos, float radius, unsigned int col);
+	Ball(glm::vec3 pos, float radius, unsigned int col);
 
 	void update(float delta) override;
 	void draw() override;

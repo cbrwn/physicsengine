@@ -4,10 +4,9 @@
  * ================================= */
 #pragma once
 
-#include <darray.h>
-#include <matrix4.h>
-#include <vector3.h>
+#include <vector>
 #include <functional> // for std::function
+#include <glm/glm.hpp>
 
 struct Collider;
 
@@ -33,28 +32,28 @@ public:
 	inline Collider* getCollider() { return m_collider; }
 
 	// set the entire transform of the body
-	void setTransform(Matrix4 const& m);
+	void setTransform(glm::mat4 const& m);
 	// set just the position part of the transform
-	void setPosition(Vector3 const& v);
+	void setPosition(glm::vec3 const& v);
 	// set just the rotation part of the transform
-	void setRotation(Vector3 const& v);
+	void setRotation(glm::vec3 const& v);
 
 	// adds a rotation to the body
-	void rotate(Vector3 const& v);
+	void rotate(glm::vec3 const& v);
 
 	// grab the position out of the transform matrix
-	Vector3 getPosition();
+	glm::vec3 getPosition();
 
 	// setters for velocities
-	void setVelocity(Vector3 const& v) { m_velocity = v; }
-	void setAngularVelocity(Vector3 const& v) { m_angularVelocity = v; }
+	void setVelocity(glm::vec3 const& v) { m_velocity = v; }
+	void setAngularVelocity(glm::vec3 const& v) { m_angularVelocity = v; }
 
 	// getters for velocities
-	inline Vector3 getVelocity() { return m_velocity; }
-	inline Vector3 getAngularVelocity() { return m_angularVelocity; }
+	inline glm::vec3 getVelocity() { return m_velocity; }
+	inline glm::vec3 getAngularVelocity() { return m_angularVelocity; }
 
 	// adds some velocity
-	void addForce(Vector3 force, Vector3 pos);
+	void addForce(glm::vec3 force, glm::vec3 pos);
 
 	// set physical properties of the body
 	// bounce and friction aren't implemented yet!
@@ -92,22 +91,22 @@ public:
 	void setDebug(bool d) { m_debug = d; }
 
 	// transforms a point by just the rotation of the matrix
-	Vector3 rotatePoint(Vector3 const& pt);
+	glm::vec3 rotatePoint(glm::vec3 const& pt);
 	// tramsforms a point by the whole transform matrix
-	Vector3 transformPoint(Vector3 const& pt);
+	glm::vec3 transformPoint(glm::vec3 const& pt);
 
 	// get just the rotation portion of the transform matrix
-	Matrix4 getRotationMatrix();
+	glm::mat4 getRotationMatrix();
 	// get the whole transform matrix
-	Matrix4 getTransformMatrix();
+	glm::mat4 getTransformMatrix();
 
 	// grab the extents of a box which fits around the whole body,
 	// used in broad phase collision detection
-	Vector3	getBroadExtents() { return m_broadExtents; }
+	glm::vec3	getBroadExtents() { return m_broadExtents; }
 	// updates those extents to fit around the body
 	void updateBroadExtents();
 
-	DArray<PhysicsBody*>& getCollidingBodies() { return m_colliding; }
+	std::vector<PhysicsBody*>& getCollidingBodies() { return m_colliding; }
 
 	// specific broad phase collision functions
 	static bool AABBvsAABB(Collider* c1, Collider* c2);
@@ -117,9 +116,9 @@ public:
 	// general broad phase collision detection
 	bool isCollidingBroad(Collider* other);
 	// narrow phase collision detection
-	bool isCollidingSAT(Collider* other, float& penOut, Vector3& axisOut, Vector3& pointOut);
+	bool isCollidingSAT(Collider* other, float& penOut, glm::vec3& axisOut, glm::vec3& pointOut);
 
-	bool rayTestBroad(Vector3 const& start, Vector3 const& dir, float* outDist);
+	bool rayTestBroad(glm::vec3 const& start, glm::vec3 const& dir, float* outDist);
 
 	void setCollideCallback(std::function<void(PhysicsBody*)> func) 
 	{ m_collideCallback = func; }
@@ -130,17 +129,17 @@ public:
 private:
 	Collider* m_collider;
 
-	Vector3 m_velocity;
-	Vector3 m_angularVelocity;
+	glm::vec3 m_velocity;
+	glm::vec3 m_angularVelocity;
 
 	float m_drag;
 	float m_angularDrag;
 
-	Matrix4 m_transform;
+	glm::mat4 m_transform;
 
 	// store broad extents so we don't have to calculate them each time we
 	// test collision
-	Vector3 m_broadExtents;
+	glm::vec3 m_broadExtents;
 
 	// physical properties
 	float m_mass;
@@ -151,7 +150,7 @@ private:
     FrictionMode m_frictionMode;
 
 	// list of currently colliding bodies
-	DArray<PhysicsBody*> m_colliding;
+	std::vector<PhysicsBody*> m_colliding;
 
 	bool m_debug;
 
@@ -166,7 +165,7 @@ private:
 	float m_stillTime;
 	// vector to keep track of its last position so we know if we can put it
 	// to sleep
-	Vector3 m_stillPos;
+	glm::vec3 m_stillPos;
 
 	bool m_enabled;
 
@@ -180,6 +179,6 @@ private:
 
 	// resolves collision by pushing objects out of each other and applying
 	// relevant forces
-	void resolveCollision(Collider* other, float pen, Vector3 axis, Vector3 vertex);
+	void resolveCollision(Collider* other, float pen, glm::vec3 axis, glm::vec3 vertex);
 
 };

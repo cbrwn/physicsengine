@@ -7,7 +7,6 @@ set(EXECUTABLE_OUTPUT_PATH ${CMAKE_SOURCE_DIR})
 add_executable(${PROJECT_NAME}
     box.cpp
     ball.cpp
-    util.cpp
     plane.cpp
     camera.cpp
     gamehud.cpp

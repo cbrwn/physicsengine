@@ -38,7 +38,7 @@
     <ProjectGuid>{EA21C4DF-E331-4FCF-8513-14A3F56B77F3}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>Project3D</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -315,6 +315,7 @@
     <ClCompile Include="collideraabb.cpp" />
     <ClCompile Include="collidercone.cpp" />
     <ClCompile Include="gamehud.cpp" />
+    <ClCompile Include="gamestate.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="objectpool.cpp" />
     <ClCompile Include="physicsactor.cpp" />
@@ -339,6 +340,7 @@
     <ClInclude Include="collidersphere.h" />
     <ClInclude Include="basestate.h" />
     <ClInclude Include="gamehud.h" />
+    <ClInclude Include="gamestate.h" />
     <ClInclude Include="objectpool.h" />
     <ClInclude Include="physics.h" />
     <ClInclude Include="physicsactor.h" />

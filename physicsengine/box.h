@@ -13,7 +13,7 @@ class PhysicsBody;
 class Box : public PhysicsActor
 {
 public:
-	Box(Vector3 pos, Vector3 size, unsigned int col, bool lines = true);
+	Box(glm::vec3 pos, glm::vec3 size, unsigned int col, bool lines = true);
 
 	void update(float delta) override;
 	void draw() override;
@@ -24,5 +24,5 @@ private:
 	float m_growTime;
 
 	unsigned int m_color;
-	Vector3 m_size;
+	glm::vec3 m_size;
 };

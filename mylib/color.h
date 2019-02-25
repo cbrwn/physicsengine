@@ -10,7 +10,7 @@
 	#define MYLIB_SPEC 
 #endif
 
-#include "vector4.h"
+#include <glm/glm.hpp>
 
 /***
  *  @brief Converts RGB values from 0..1 into an unsigned integer
@@ -51,7 +51,7 @@ MYLIB_SPEC unsigned int hsb(float hue, float saturation, float brightness);
  *  @param brightness Brightness value from 0..1
  *  @return Vector4 containing RGBA values from 0..1
  */
-MYLIB_SPEC Vector4 hsbVec(float hue, float saturation, float brightness);
+MYLIB_SPEC glm::vec4 hsbVec(float hue, float saturation, float brightness);
 
 /***
  *  @brief Converts an RGB unsigned integer into a Vector4 with RGBA values
@@ -60,4 +60,4 @@ MYLIB_SPEC Vector4 hsbVec(float hue, float saturation, float brightness);
  *  @param color Unsigned integer with the format 0xRRGGBBAA
  *  @return Vector4 containing RGBA values from 0..1
  */
-MYLIB_SPEC Vector4 intToVector(unsigned int color);
+MYLIB_SPEC glm::vec4 intToVector(unsigned int color);

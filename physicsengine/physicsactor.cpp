@@ -8,7 +8,7 @@
 
 #include "shapes.h"
 
-PhysicsActor::PhysicsActor(Vector3 pos)
+PhysicsActor::PhysicsActor(glm::vec3 pos)
 	: Actor(pos)
 {
 	m_type = ACTORTYPE_PHYSICS;
@@ -38,15 +38,18 @@ void PhysicsActor::update(float delta)
 		// apply the body's transform to our actor transform
 		m_localTransform = m_body->getTransformMatrix();
 		updateTransform();
+
+		auto p = getPosition();
+		printf("%.2f, %.2f, %.2f\n", p.x, p.y, p.z);
 	}
 }
 
 void PhysicsActor::draw()
 {
 	// draw the broad bounding box by default
-	Vector3 extents = m_body->getBroadExtents();
+	glm::vec3 extents = m_body->getBroadExtents();
 
-	drawBox(Vector3(), extents, Vector4(1, 1, 1, 1), &m_globalTransform);
+	drawBox(glm::vec3(), extents, glm::vec4(1, 1, 1, 1), &m_globalTransform);
 }
 
 void PhysicsActor::setEnabled(bool e)

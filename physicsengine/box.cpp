@@ -6,12 +6,11 @@
 
 #include <color.h>
 
-#include "util.h"
 #include "shapes.h"
 #include "physics.h"
 #include "collideraabb.h"
 
-Box::Box(Vector3 pos, Vector3 size, unsigned int col, bool lines)
+Box::Box(glm::vec3 pos, glm::vec3 size, unsigned int col, bool lines)
 	: PhysicsActor(pos), m_drawLines(lines), m_color(col), m_size(size)
 {
 	auto collider = new ColliderAABB(m_size);
@@ -32,14 +31,14 @@ void Box::update(float delta)
 			m_growTime = BOX_GROW_TIME;
 	}
 
-	if (getPosition().y <= -5.0f){
+	if (getPosition().y <= -5.0f) {
 		setEnabled(false);
 	}
 }
 
 void Box::draw()
 {
-	Vector4 c = intToVector(m_color);
+	glm::vec4 c = intToVector(m_color);
 
 	auto easelambda = [](float t) {
 		return -1.0f * powf(4.0f, -8.0f*t) * sinf((t*6.0f - 1.0f)*(2.0f*3.14159f) / 2.0f) + 1.0f;
@@ -47,5 +46,5 @@ void Box::draw()
 
 	float sz = easelambda(m_growTime / BOX_GROW_TIME);
 
-	drawBox(Vector3(0, 0, 0), m_size*sz, c, &m_globalTransform, m_drawLines);
+	drawBox(glm::vec3(0, 0, 0), m_size*sz, c, &m_globalTransform, m_drawLines);
 }

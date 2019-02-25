@@ -4,8 +4,8 @@
  * ================================= */
 #pragma once
 
-#include <darray.h>
-#include <vector3.h>
+#include <vector>
+#include <glm/glm.hpp>
 
 class PhysicsBody;
 
@@ -24,8 +24,8 @@ struct Collider
 	PhysicsBody* body;
 
 	// all the information needed for SAT collision
-	DArray<Vector3> points;
-	DArray<Vector3> normals;
+	std::vector<glm::vec3> points;
+	std::vector<glm::vec3> normals;
 
 	// ability to draw that information for debug 
 	void drawPoints();

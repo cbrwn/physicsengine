@@ -7,7 +7,7 @@
 #include <glm/glm.hpp>
 #include <gmath.h>
 
-ColliderSphere::ColliderSphere(Vector3 const& c, float r, int rows, int cols)
+ColliderSphere::ColliderSphere(glm::vec3 const& c, float r, int rows, int cols)
 {
 	center = c;
 	radius = r;
@@ -51,8 +51,8 @@ ColliderSphere::ColliderSphere(Vector3 const& c, float r, int rows, int cols)
 			vec3 v4Normal(inverseRadius * v4Point.x,
 				inverseRadius * v4Point.y, inverseRadius * v4Point.z);
 
-			points.add(Vector3(v4Point.x, v4Point.y, v4Point.z));
-			normals.add(Vector3(v4Normal.x, v4Normal.y, v4Normal.z));
+			points.push_back(glm::vec3(v4Point.x, v4Point.y, v4Point.z));
+			normals.push_back(glm::vec3(v4Normal.x, v4Normal.y, v4Normal.z));
 		}
 	}
 }

@@ -6,7 +6,6 @@
 
 #include <Gizmos.h>
 
-#include "util.h"
 #include "physicsbody.h"
 #include "collideraabb.h"
 
@@ -19,7 +18,7 @@ PhysicsManager::PhysicsManager()
 	// arbitrary extent of the octree
 	// no collision will work outside of this range
 	const float treeSize = 100.0f;
-	m_tree = new Octree<PhysicsBody*>(3,
+	m_tree = new Octree<PhysicsBody*>(3000,
 		{ -treeSize, -treeSize, -treeSize,
 		treeSize, treeSize, treeSize });
 }
@@ -34,13 +33,13 @@ void PhysicsManager::drawTree(Octree<PhysicsBody*>* tree)
 	// turn this tree's bounds into vectors so we can use them
 	OctCube volume = tree->getBounds();
 
-	Vector3 min(volume.minX, volume.minY, volume.minZ);
-	Vector3 max(volume.maxX, volume.maxY, volume.maxZ);
+	glm::vec3 min(volume.minX, volume.minY, volume.minZ);
+	glm::vec3 max(volume.maxX, volume.maxY, volume.maxZ);
 
-	Vector3 extents = (max - min) / 2.0f;
-	Vector3 center = min + extents;
+	glm::vec3 extents = (max - min) / 2.0f;
+	glm::vec3 center = min + extents;
 
-	aie::Gizmos::addAABB(toVec3(center), toVec3(extents),
+	aie::Gizmos::addAABB(center, extents,
 		glm::vec4(0, 0, 0, 1));
 
 	// recursively draw this tree's children
@@ -66,7 +65,7 @@ PhysicsManager* PhysicsManager::getInstance()
 
 void PhysicsManager::addPhysicsBody(PhysicsBody* b)
 {
-	m_bodies.add(b);
+	m_bodies.push_back(b);
 }
 
 void PhysicsManager::update(float delta)
@@ -76,13 +75,13 @@ void PhysicsManager::update(float delta)
 	// not ideal, but the performance improvement from not using an octree
 	// at all is already substantial using this
 	m_tree->clear();
-	for (int i = 0; i < m_bodies.getCount(); ++i)
+	for (int i = 0; i < m_bodies.size(); ++i)
 	{
 		auto body = m_bodies[i];
 		if (body->isEnabled())
 		{
-			Vector3 pos = body->getPosition();
-			Vector3 extents = body->getBroadExtents();
+			glm::vec3 pos = body->getPosition();
+			glm::vec3 extents = body->getBroadExtents();
 			// turn the body's extents into a volume usable by the octree
 			OctCube cube;
 			cube.minX = pos.x - extents.x;
@@ -96,7 +95,7 @@ void PhysicsManager::update(float delta)
 		}
 	}
 
-	for (int i = 0; i < m_bodies.getCount(); ++i)
+	for (int i = 0; i < m_bodies.size(); ++i)
 		m_bodies[i]->update(delta);
 }
 
@@ -105,8 +104,8 @@ void PhysicsManager::clear()
 	m_bodies.clear();
 }
 
-DArray<PhysicsBody*> PhysicsManager::getBodiesInRange(Vector3 const& min, 
-	Vector3 const& max)
+std::vector<PhysicsBody*> PhysicsManager::getBodiesInRange(glm::vec3 const& min, 
+	glm::vec3 const& max)
 {
 	// turn these vectors into a usable OctCube
 	OctCube volume;
@@ -123,19 +122,19 @@ DArray<PhysicsBody*> PhysicsManager::getBodiesInRange(Vector3 const& min,
 
 // performs a ray cast on all bodies WITH AN AABB COLLIDER, not implemented for
 // any other kind of collider!
-PhysicsBody* PhysicsManager::rayCast(Vector3 const& start, 
-	Vector3 const& dir, Vector3& outPos)
+PhysicsBody* PhysicsManager::rayCast(glm::vec3 const& start, 
+	glm::vec3 const& dir, glm::vec3& outPos)
 {
-	auto col = new ColliderAABB(Vector3(0.01f, 0.01f, 0.01f));
+	auto col = new ColliderAABB(glm::vec3(0.01f, 0.01f, 0.01f));
 	PhysicsBody testBody(col);
 
-	Vector3 nDir = dir.normalised();
-	Vector3 nStart = start;
+	glm::vec3 nDir = glm::normalize(dir);
+	glm::vec3 nStart = start;
 
 	float closestDist = INFINITY;
 	PhysicsBody* closest = nullptr;
 
-	for (int i = 0; i < m_bodies.getCount(); ++i)
+	for (int i = 0; i < m_bodies.size(); ++i)
 	{
 		PhysicsBody* body = m_bodies[i];
 		Collider* collider = body->getCollider();
@@ -150,8 +149,8 @@ PhysicsBody* PhysicsManager::rayCast(Vector3 const& start,
 		//auto aabb = (ColliderAABB*)collider;
 		if (body->rayTestBroad(nStart, nDir, &d))
 		{
-			Vector3 pos = (nDir * d);
-			float f = pos.dot(dir);
+			glm::vec3 pos = (nDir * d);
+			float f = glm::dot(pos, dir);
 			// make sure the object isn't behind the start position
 			if (d < closestDist && d >= 0.0f)
 			{

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "basestate.h"
-#include <vector2.h>
+#include <glm/glm.hpp>
 
 class Box;
 class World;

@@ -8,10 +8,8 @@
 #include <Gizmos.h>
 #include <glm/ext.hpp>
 
-#include "util.h"
-
-void drawBox(Vector3 const& center, Vector3 const& size, Vector4 const& fill,
-	Matrix4* transform, bool drawLines, Vector4 const& outline)
+void drawBox(glm::vec3 const& center, glm::vec3 const& size, glm::vec4 const& fill,
+	glm::mat4* transform, bool drawLines, glm::vec4 const& outline)
 {
 	// copied from Gizmos::addAABBFilled
 
@@ -19,15 +17,15 @@ void drawBox(Vector3 const& center, Vector3 const& size, Vector4 const& fill,
 	using namespace glm;
 
 	vec3 vVerts[8];
-	vec3 tempCenter = toVec3(center);
-	vec3 rvExtents = toVec3(size);
+	vec3 tempCenter = center;
+	vec3 rvExtents = size;
 	vec3 vX(rvExtents.x, 0, 0);
 	vec3 vY(0, rvExtents.y, 0);
 	vec3 vZ(0, 0, rvExtents.z);
 
 	if (transform)
 	{
-		mat4 trans = toMat4(*transform);
+		mat4 trans = *transform;
 
 		vX = vec3((trans * vec4(vX, 0)));
 		vY = vec3((trans * vec4(vY, 0)));
@@ -47,8 +45,8 @@ void drawBox(Vector3 const& center, Vector3 const& size, Vector4 const& fill,
 	vVerts[6] = tempCenter + vX + vZ + vY;
 	vVerts[7] = tempCenter + vX - vZ + vY;
 
-	vec4 lineCol = toVec4(outline);
-	vec4 fillCol = toVec4(fill);
+	vec4 lineCol = outline;
+	vec4 fillCol = fill;
 
 	if (drawLines)
 	{
@@ -93,9 +91,9 @@ void drawBox(Vector3 const& center, Vector3 const& size, Vector4 const& fill,
 	Gizmos::addTri(vVerts[6], vVerts[2], vVerts[7], fillCol);
 }
 
-void drawSphere(Vector3 const& center, float radius, Vector4 const& fill,
-	Matrix4* transform, int rows, int columns, bool drawOutline,
-	Vector4 const& outline)
+void drawSphere(glm::vec3 const& center, float radius, glm::vec4 const& fill,
+	glm::mat4* transform, int rows, int columns, bool drawOutline,
+	glm::vec4 const& outline)
 {
 	// copied from Gizmos::addsphere
 
@@ -120,9 +118,9 @@ void drawSphere(Vector3 const& center, float radius, Vector4 const& fill,
 	float invRows = 1.0f / rows;
 
 
-	vec3 tempCenter = toVec3(center);
+	vec3 tempCenter = center;
 	if (transform)
-		tempCenter = toVec3((Vector3)(*transform)[3]) + tempCenter;
+		tempCenter = glm::vec3((*transform)[3]) + tempCenter;
 
 
 	// for each row of the mesh
@@ -131,9 +129,9 @@ void drawSphere(Vector3 const& center, float radius, Vector4 const& fill,
 	// convert my stuff into glm stuff
 	mat4 transMat4;
 	if (transform)
-		transMat4 = toMat4(*transform);
-	vec4 fillColour = toVec4(fill);
-	vec4 lineColour = toVec4(outline);
+		transMat4 = *transform;
+	vec4 fillColour = fill;
+	vec4 lineColour = outline;
 
 	for (int row = 0; row <= rows; ++row)
 	{
@@ -191,8 +189,8 @@ void drawSphere(Vector3 const& center, float radius, Vector4 const& fill,
 	delete[] v4Array;
 }
 
-void drawReverseSphere(Vector3 const& center, float radius,
-	Vector4 const& fill, Matrix4* transform, int rows, int columns)
+void drawReverseSphere(glm::vec3 const& center, float radius,
+	glm::vec4 const& fill, glm::mat4* transform, int rows, int columns)
 {
 	using namespace aie;
 	using namespace glm;
@@ -210,9 +208,9 @@ void drawReverseSphere(Vector3 const& center, float radius,
 
 	float DEG2RAD = pi<float>() / 180;
 
-	vec3 tempCenter = toVec3(center);
+	vec3 tempCenter = center;
 	if (transform)
-		tempCenter = toVec3((Vector3)(*transform)[3]) + tempCenter;
+		tempCenter = glm::vec3((*transform)[3]) + tempCenter;
 
 	//Lets put everything in radians first
 	float latitiudinalRange = (latMax - latMin) * DEG2RAD;
@@ -224,8 +222,8 @@ void drawReverseSphere(Vector3 const& center, float radius,
 	// convert my stuff into glm stuff
 	mat4 transMat4;
 	if (transform)
-		transMat4 = toMat4(*transform);
-	vec4 fillColour = toVec4(fill);
+		transMat4 = *transform;
+	vec4 fillColour = fill;
 
 	for (int row = 0; row <= rows; ++row)
 	{
@@ -281,25 +279,25 @@ void drawReverseSphere(Vector3 const& center, float radius,
 	delete[] v4Array;
 }
 
-void drawCylinder(Vector3 const& center, float radius, float height,
-	int segments, Vector4 const& fill, Matrix4* transform, bool drawOutline,
-	Vector4 const& outline)
+void drawCylinder(glm::vec3 const& center, float radius, float height,
+	int segments, glm::vec4 const& fill, glm::mat4* transform, bool drawOutline,
+	glm::vec4 const& outline)
 {
 	using namespace aie;
 	using namespace glm;
 
 	vec4 white(1, 1, 1, 1);
 
-	Vector3 tempCenter = transform != nullptr ?
-		((Vector3)(*transform)[3]) + center : center;
+	glm::vec3 tempCenter = transform != nullptr ?
+		((glm::vec3)(*transform)[3]) + center : center;
 
 	mat4 glmTransform;
 	if (transform)
-		glmTransform = toMat4(*transform);
-	vec3 glmCenter = toVec3(tempCenter);
+		glmTransform = *transform;
+	vec3 glmCenter = tempCenter;
 
-	vec4 glmFill = toVec4(fill);
-	vec4 glmOutline = toVec4(outline);
+	vec4 glmFill = fill;
+	vec4 glmOutline = outline;
 
 	float segmentSize = (2 * pi<float>()) / segments;
 
@@ -340,25 +338,25 @@ void drawCylinder(Vector3 const& center, float radius, float height,
 	}
 }
 
-void drawCone(Vector3 const& center, float topRadius, float bottomRadius,
-	float height, int segments, Vector4 const& fill, Matrix4* transform,
-	bool drawOutline, Vector4 const& outline)
+void drawCone(glm::vec3 const& center, float topRadius, float bottomRadius,
+	float height, int segments, glm::vec4 const& fill, glm::mat4* transform,
+	bool drawOutline, glm::vec4 const& outline)
 {
 	using namespace aie;
 	using namespace glm;
 
 	vec4 white(1, 1, 1, 1);
 
-	Vector3 tempCenter = transform != nullptr ?
-		((Vector3)(*transform)[3]) + center : center;
+	glm::vec3 tempCenter = transform != nullptr ?
+		((glm::vec3)(*transform)[3]) + center : center;
 
 	mat4 glmTransform;
 	if (transform)
-		glmTransform = toMat4(*transform);
-	vec3 glmCenter = toVec3(tempCenter);
+		glmTransform = *transform;
+	vec3 glmCenter = tempCenter;
 
-	vec4 glmFill = toVec4(fill);
-	vec4 glmOutline = toVec4(outline);
+	vec4 glmFill = fill;
+	vec4 glmOutline = outline;
 
 	float segmentSize = (2 * pi<float>()) / segments;
 
@@ -399,21 +397,21 @@ void drawCone(Vector3 const& center, float topRadius, float bottomRadius,
 	}
 }
 
-void drawPlane(Vector3 const& topLeft, Vector3 const& topRight, 
-	Vector3 const& bottomRight, Vector3 const& bottomLeft, 
-	Vector4 const& fill, bool drawOutline, Vector4 const& outline)
+void drawPlane(glm::vec3 const& topLeft, glm::vec3 const& topRight, 
+	glm::vec3 const& bottomRight, glm::vec3 const& bottomLeft, 
+	glm::vec4 const& fill, bool drawOutline, glm::vec4 const& outline)
 {
 	using namespace aie;
 	using namespace glm;
 
-	// turn our Vector3s into glm::vec3s
-	vec3 tl = toVec3(topLeft);
-	vec3 tr = toVec3(topRight);
-	vec3 br = toVec3(bottomRight);
-	vec3 bl = toVec3(bottomLeft);
+	// turn our glm::vec3s into glm::vec3s
+	vec3 tl = topLeft;
+	vec3 tr = topRight;
+	vec3 br = bottomRight;
+	vec3 bl = bottomLeft;
 
 	// and the colour
-	vec4 fc = toVec4(fill);
+	vec4 fc = fill;
 
 	/*
 	 *  O-------O
@@ -440,7 +438,7 @@ void drawPlane(Vector3 const& topLeft, Vector3 const& topRight,
 	// let's draw the outline!
 
 	// turn outline colour into vec4
-	vec4 lc = toVec4(outline);
+	vec4 lc = outline;
 
 	// top-left to top-right
 	Gizmos::addLine(tl, tr, lc);

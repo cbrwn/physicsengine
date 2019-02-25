@@ -7,26 +7,25 @@
 #include <Gizmos.h>
 #include <glm/glm.hpp>
 
-#include "util.h"
 #include "shapes.h"
 #include "physicsbody.h"
 
 // draws a small sphere at each point of the collider
 void Collider::drawPoints()
 {
-	for (int i = 0; i < points.getCount(); ++i)
+	for (int i = 0; i < points.size(); ++i)
 	{
-		Vector3 p = points[i];
-		Matrix4 m;
-		m.setPosition(p);
+		glm::vec3 p = points[i];
+		glm::mat4 m;
+		m[3] = glm::vec4(p, m[3].w);
 
 		// translate the point with the body
-		Matrix4 transformed = body->getTransformMatrix() * m;
+		glm::mat4 transformed = body->getTransformMatrix() * m;
 
 		// draw a nice red sphere
 		// (which is sometimes transparent when there's a lot of gizmos)
-		drawSphere(Vector3(), 0.05f, Vector4(1, 0, 0, 1), &transformed,
-			8, 8, true, Vector4(1, 0, 0, 1));
+		drawSphere(glm::vec3(), 0.05f, glm::vec4(1, 0, 0, 1), &transformed,
+			8, 8, true, glm::vec4(1, 0, 0, 1));
 	}
 }
 
@@ -39,18 +38,18 @@ void Collider::drawNormals()
 		return;
 
 	// grab the center of the body to use as the origin point for lines
-	glm::vec3 p1 = toVec3(body->getPosition());
+	glm::vec3 p1 = body->getPosition();
 
-	for (int i = 0; i < normals.getCount(); ++i)
+	for (int i = 0; i < normals.size(); ++i)
 	{
-		Matrix4 m;
+		glm::mat4 m;
 		// extend normals out 1.5 units
-		m.setPosition(normals[i] * 1.5f);
+		m[3] = glm::vec4(normals[i] * 1.5f, m[3].w);
 
 		// translate it with its body
 		m = body->getTransformMatrix() * m;
 
-		glm::vec3 p2 = toVec3(m.getPosition());
+		glm::vec3 p2 = m[3];
 
 		// draw a nice blue line
 		aie::Gizmos::addLine(p1, p2, glm::vec4(0, 0, 1, 1));

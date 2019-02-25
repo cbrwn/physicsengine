@@ -1,7 +1,7 @@
 #pragma once
 
-#include <darray.h>
-#include <matrix4.h>
+#include <vector>
+#include <glm/glm.hpp>
 #include <Renderer2D.h>
 
 class Actor;
@@ -25,18 +25,18 @@ public:
 	ObjectPool* getPool();
 
 	PhysicsActor* getActorWithBody(PhysicsBody* body);
-	void getMouseRay(Vector3* outStart, Vector3* outDir);
+	void getMouseRay(glm::vec3* outStart, glm::vec3* outDir);
 
 	Camera* getCamera();
 
 private:
 	Game* m_game;
 
-	DArray<Actor*> m_actors;
-	DArray<PhysicsActor*> m_physicsActors;
+	std::vector<Actor*> m_actors;
+	std::vector<PhysicsActor*> m_physicsActors;
 
 	ObjectPool* m_pool;
 
 	Camera* m_camera;
-	Matrix4 m_projectionMatrix;
+	glm::mat4 m_projectionMatrix;
 };

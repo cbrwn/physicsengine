@@ -105,6 +105,9 @@
     <ClCompile Include="collidersphere.cpp">
       <Filter>Source Files\physics\colliders</Filter>
     </ClCompile>
+    <ClCompile Include="gamestate.cpp">
+      <Filter>Source Files\states</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="util.h">
@@ -172,6 +175,9 @@
     </ClInclude>
     <ClInclude Include="ball.h">
       <Filter>Header Files\actors</Filter>
+    </ClInclude>
+    <ClInclude Include="gamestate.h">
+      <Filter>Header Files\states</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -2,9 +2,9 @@
 
 #include "shapes.h"
 
-Plane::Plane(Vector3 topLeft, Vector3 topRight, 
-	Vector3 bottomRight, Vector3 bottomLeft, Vector4 col)
-	: Actor(Vector3())
+Plane::Plane(glm::vec3 topLeft, glm::vec3 topRight, 
+	glm::vec3 bottomRight, glm::vec3 bottomLeft, glm::vec4 col)
+	: Actor(glm::vec3())
 {
 	m_points[0] = topLeft;
 	m_points[1] = topRight;

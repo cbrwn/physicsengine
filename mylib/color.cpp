@@ -31,7 +31,7 @@ unsigned int rgbToInt(int r, int g, int b, int a)
 unsigned int hsb(float hue, float saturation, float brightness)
 {
 	// check for gray
-	if(saturation == 0)
+	if (saturation == 0)
 	{
 		auto val = (int)(brightness * 255.0f + 5.0f);
 		return rgbToInt(val, val, val);
@@ -48,7 +48,7 @@ unsigned int hsb(float hue, float saturation, float brightness)
 
 	float rMul, gMul, bMul;
 
-	switch((int)h)
+	switch ((int)h)
 	{
 	case 0:
 		rMul = brightness;
@@ -90,16 +90,16 @@ unsigned int hsb(float hue, float saturation, float brightness)
 	return rgbToInt(r, g, b);
 }
 
-Vector4 hsbVec(float hue, float saturation, float brightness)
+glm::vec4 hsbVec(float hue, float saturation, float brightness)
 {
 	return intToVector(hsb(hue, saturation, brightness));
 }
 
-Vector4 intToVector(unsigned int color)
+glm::vec4 intToVector(unsigned int color)
 {
 	float alpha = (color & 0xff) / 255.0f;
 	float blue = ((color >> 8) & 0xff) / 255.0f;
 	float green = ((color >> 16) & 0xff) / 255.0f;
 	float red = ((color >> 24) & 0xff) / 255.0f;
-	return Vector4(red, green, blue, alpha);
+	return { red, green, blue, alpha };
 }

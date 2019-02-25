@@ -1,7 +1,7 @@
 #pragma once
 
 #include "basestate.h"
-#include <vector2.h>
+#include <glm/glm.hpp>
 
 class World;
 class PhysicsBody;
@@ -26,7 +26,7 @@ private:
 	float m_targetMagnitude;
 	float m_lastScroll;
 
-	Vector2 m_lastMouse;
+	glm::vec2 m_lastMouse;
 
 	unsigned int randomColor();
 

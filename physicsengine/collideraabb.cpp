@@ -4,12 +4,9 @@
  * ================================= */
 #include "collideraabb.h"
 
-#include <matrix4.h>
-
-#include "util.h"
 #include "physicsbody.h"
 
-ColliderAABB::ColliderAABB(Vector3 const& ext)
+ColliderAABB::ColliderAABB(glm::vec3 const& ext)
 {
 	extents = ext;
 	type = COLLIDER_AABB;
@@ -18,25 +15,25 @@ ColliderAABB::ColliderAABB(Vector3 const& ext)
 	for (int i = -1; i <= 1; i += 2)
 		for (int j = -1; j <= 1; j += 2)
 			for (int k = -1; k <= 1; k += 2)
-				points.add(Vector3(i*ext.x, j*ext.y, k*ext.z));
+				points.push_back(glm::vec3(i*ext.x, j*ext.y, k*ext.z));
 
 	// the normals for a cube are easy, just point in each direction
 	for (int i = -1; i <= 1; i += 2) {
-		normals.add(Vector3(i, 0, 0));
-		normals.add(Vector3(0, i, 0));
-		normals.add(Vector3(0, 0, i));
+		normals.push_back(glm::vec3(i, 0, 0));
+		normals.push_back(glm::vec3(0, i, 0));
+		normals.push_back(glm::vec3(0, 0, i));
 	}
 }
 
 // checks collision with a ray
 // returns whether or not the ray intersects, and also spits out the distance
 // to the nearest face in outDist
-bool ColliderAABB::rayTest(Vector3 start, Vector3 dir, float& outDist)
+bool ColliderAABB::rayTest(glm::vec3 start, glm::vec3 dir, float& outDist)
 {
-	Matrix4 m = body->getTransformMatrix();
-	Vector3 pos = m.getPosition();
+	glm::mat4 m = body->getTransformMatrix();
+	glm::vec3 pos = m[3];
 
-	Vector3 startDif = pos - start;
+	glm::vec3 startDif = pos - start;
 
 	// these look wrong, but tMin should be the FARTHEST near face
 	float tMin = -INFINITY;
@@ -47,13 +44,13 @@ bool ColliderAABB::rayTest(Vector3 start, Vector3 dir, float& outDist)
 	for (int i = 0; i < 3; ++i)
 	{
 		// easily grab the right/up/forward vectors by casting the column of
-		// the matrix to a Vector3, dropping the w value
-		Vector3 axis = (Vector3)m[i];
+		// the matrix to a glm::vec3, dropping the w value
+		glm::vec3 axis = (glm::vec3)m[i];
 
 		// dot this axis direction with the start difference
-		float e = axis.dot(startDif);
+		float e = glm::dot(axis, startDif);
 		// and the ray direction
-		float f = axis.dot(dir);
+		float f = glm::dot(axis, dir);
 
 		// (badly) make sure we don't divide by 0
 		if (fabsf(f) < 0.001f)

@@ -10,7 +10,7 @@
 class PhysicsActor : public Actor
 {
 public:
-	PhysicsActor(Vector3 pos);
+	PhysicsActor(glm::vec3 pos);
 	virtual ~PhysicsActor();
 
 	virtual void update(float delta) override;

@@ -7,7 +7,6 @@
 #include <glm/glm.hpp>
 
 #include "game.h"
-#include "util.h"
 #include "camera.h"
 #include "camera.h"
 #include "objectpool.h"
@@ -24,7 +23,7 @@ World::World(Game* game)
 
 World::~World()
 {
-	for (int i = 0; i < m_actors.getCount(); ++i)
+	for (int i = 0; i < m_actors.size(); ++i)
 		delete m_actors[i];
 
 	delete m_camera;
@@ -33,16 +32,21 @@ World::~World()
 
 void World::addActor(Actor* a)
 {
-	m_actors.add(a);
+	m_actors.push_back(a);
 	a->setWorld(this);
 
 	if (a->getType() == ACTORTYPE_PHYSICS)
-		m_physicsActors.add((PhysicsActor*)a);
+		m_physicsActors.push_back((PhysicsActor*)a);
 }
 
 void World::update(float delta)
 {
-	for (int i = 0; i < m_actors.getCount(); ++i)
+	auto p = m_camera->getPosition();
+	auto r = m_camera->getRotation();
+
+	//printf("(%.2f, %.2f, %.2f) (%.2f, %.2f, %.2f)\n", p.x, p.y, p.z, r.x, r.y, r.z);
+
+	for (int i = 0; i < m_actors.size(); ++i)
 		if (m_actors[i]->isEnabled())
 			m_actors[i]->update(delta);
     aie::Gizmos::clear();
@@ -52,8 +56,7 @@ void World::draw()
 {
 	using namespace aie;
 
-
-	for (int i = 0; i < m_actors.getCount(); ++i)
+	for (int i = 0; i < m_actors.size(); ++i)
 		if (m_actors[i]->isEnabled())
 			m_actors[i]->draw();
 
@@ -65,9 +68,9 @@ void World::draw()
 	// grab projection matrix
 	auto glmProj = glm::perspective(PI*0.25f,
 		windowWidth / windowHeight, 0.1f, 1000.f);
-	m_projectionMatrix = fromMat4(glmProj);
+	m_projectionMatrix = glmProj;
 
-	auto glmView = toMat4(m_camera->getViewMatrix());
+	auto glmView = m_camera->getViewMatrix();
 
 	Gizmos::draw(glmProj * glmView);
 
@@ -80,7 +83,7 @@ ObjectPool* World::getPool()
 
 PhysicsActor* World::getActorWithBody(PhysicsBody* body)
 {
-	for (int i = 0; i < m_physicsActors.getCount(); ++i)
+	for (int i = 0; i < m_physicsActors.size(); ++i)
 	{
 		if (m_physicsActors[i]->getBody() == body)
 			return m_physicsActors[i];
@@ -89,35 +92,35 @@ PhysicsActor* World::getActorWithBody(PhysicsBody* body)
 	return nullptr;
 }
 
-void World::getMouseRay(Vector3* outStart, Vector3* outDir)
+void World::getMouseRay(glm::vec3* outStart, glm::vec3* outDir)
 {
 	float screenWidth = (float)m_game->getWindowWidth();
 	float screenHeight = (float)m_game->getWindowHeight();
 	int mx, my;
 	aie::Input::getInstance()->getMouseXY(&mx, &my);
 
-	Matrix4 view = m_camera->getViewMatrix();
+	glm::mat4 view = m_camera->getViewMatrix();
 
-	Vector4 startScreen(((float)mx / screenWidth - 0.5f)*2.0f,
+	glm::vec4 startScreen(((float)mx / screenWidth - 0.5f)*2.0f,
 		((float)my / screenHeight - 0.5f) * 2.0f,
 		-1.0f,
 		1.0f);
-	Vector4 endScreen(((float)mx / screenWidth - 0.5f)*2.0f,
+	glm::vec4 endScreen(((float)mx / screenWidth - 0.5f)*2.0f,
 		((float)my / screenHeight - 0.5f) * 2.0f,
 		0.0f,
 		1.0f);
 
-	Matrix4 m = (m_projectionMatrix * view).inverse();
+	glm::mat4 m = glm::inverse(m_projectionMatrix * view);
 
-	Vector4 startWorld = m * startScreen;
+	glm::vec4 startWorld = m * startScreen;
 	startWorld /= startWorld.w;
-	Vector4 endWorld = m * endScreen;
+	glm::vec4 endWorld = m * endScreen;
 	endWorld /= endWorld.w;
 
-	Vector3 dirWorld = (Vector3)(endWorld - startWorld);
-	dirWorld.normalise();
+	glm::vec3 dirWorld = (glm::vec3)(endWorld - startWorld);
+	dirWorld = glm::normalize(dirWorld);
 
-	*outStart = (Vector3)startWorld;
+	*outStart = (glm::vec3)startWorld;
 	*outDir = dirWorld;
 }
 

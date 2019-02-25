@@ -33,7 +33,7 @@ bool Game::startup()
 	Gizmos::create(100000, 500000, 10000, 10000);
 
 	m_currentState = nullptr;
-	m_states.add(new DemoState(this));
+	m_states.push_back(new DemoState(this));
 	//m_states.add(new DemoState(this));
 
 	changeState(GAMESTATE_GAME);
@@ -52,7 +52,7 @@ void Game::shutdown()
 	if (m_currentState)
 		m_currentState->onLeave();
 
-	for (int i = 0; i < m_states.getCount(); ++i)
+	for (int i = 0; i < m_states.size(); ++i)
 		delete m_states[i];
 }
 

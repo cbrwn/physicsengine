@@ -4,7 +4,7 @@
  * ================================= */
 #pragma once
 
-#include <matrix4.h>
+#include <glm/glm.hpp>
 
 class Camera
 {
@@ -12,11 +12,11 @@ public:
 	Camera();
 	~Camera();
 
-	Vector3 getPosition();
-	void setPosition(Vector3 const& pos);
+	glm::vec3 getPosition();
+	void setPosition(glm::vec3 const& pos);
 
-	Vector3 getRotation();
-	void setRotation(Vector3 const& rot);
+	glm::vec3 getRotation();
+	void setRotation(glm::vec3 const& rot);
 
 	// setting individual rotation axes
 	void setYaw(float r);
@@ -24,16 +24,16 @@ public:
 	void setPitch(float r);
 
 	// turn the position and rotation into a view matrix
-	Matrix4 getViewMatrix();
+	glm::mat4 getViewMatrix();
 
 	// set the "parent" matrix - a transform matrix that the view matrix is
 	// transformed by
-	void setParentMatrix(Matrix4 m);
-	Matrix4 getParentMatrix() { return m_parentMatrix; }
+	void setParentMatrix(glm::mat4 m);
+	glm::mat4 getParentMatrix() { return m_parentMatrix; }
 
 private:
-	Vector3 m_position;
-	Vector3 m_rotation;
+	glm::vec3 m_position;
+	glm::vec3 m_rotation;
 
-	Matrix4 m_parentMatrix;
+	glm::mat4 m_parentMatrix;
 };

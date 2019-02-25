@@ -1,6 +1,6 @@
 #pragma once
 
-#include "darray.h"
+#include <vector>
 
 // forward declare so we can make a pointer in OctObject
 template <class T>
@@ -48,7 +48,7 @@ public:
 			for (int i = 0; i < 8; ++i)
 				delete m_children[i];
 
-		for (int i = 0; i < m_objects.getCount(); ++i)
+		for (int i = 0; i < m_objects.size(); ++i)
 			delete m_objects[i];
 		m_objects.clear();
 	}
@@ -62,7 +62,7 @@ public:
 	 */
 	void insert(T object, OctCube const& vol)
 	{
-		if ((m_divided || m_objects.getCount() >= m_density)
+		if ((m_divided || m_objects.size() >= m_density)
 			&& m_dividable)
 		{
 			if (!m_divided)
@@ -89,7 +89,7 @@ public:
 			obj->parent = this;
 
 			// stick it into the array
-			m_objects.add(obj);
+			m_objects.push_back(obj);
 		}
 	}
 
@@ -101,7 +101,7 @@ public:
 		if (m_divided)
 			for (int i = 0; i < 8; ++i)
 				delete m_children[i];
-		for (int i = 0; i < m_objects.getCount(); ++i)
+		for (int i = 0; i < m_objects.size(); ++i)
 			delete m_objects[i];
 		m_objects.clear();
 
@@ -130,9 +130,9 @@ public:
 	 * @param range Bounding box to check for intersection
 	 * @return Dynamic Array containing all objects within these trees
 	 */
-	DArray<T> getInRange(OctCube const& range)
+	std::vector<T> getInRange(OctCube const& range)
 	{
-		DArray<T> result;
+		std::vector<T> result;
 		getInRange(range, &result);
 		return result;
 	}
@@ -148,7 +148,7 @@ public:
 	 * @param maxZ Maximum z-axis extent of the bounds
 	 * @return Dynamic Array containing all objects within these trees
 	 */
-	DArray<T> getInRange(float minX, float minY, float minZ,
+	std::vector<T> getInRange(float minX, float minY, float minZ,
 		float maxX, float maxY, float maxZ)
 	{
 		return getInRange({ minX, minY, minZ, maxX, maxY, maxZ });
@@ -164,7 +164,7 @@ private:
 	// bounding box of this tree
 	OctCube m_bounds;
 
-	DArray<OctObject<T>*> m_objects;
+	std::vector<OctObject<T>*> m_objects;
 
 	// has this tree split
 	bool m_divided;
@@ -209,7 +209,7 @@ private:
 		m_divided = true;
 
 		// move objects into children
-		for (int i = 0; i < m_objects.getCount(); ++i)
+		for (int i = 0; i < m_objects.size(); ++i)
 		{
 			// check each child tree to see if this object intersects
 			for (int j = 0; j < 8; ++j)
@@ -233,7 +233,7 @@ private:
 	 * @param cube Box to check for intersections with
 	 * @param list Pointer to a dynamic array to add objects to
 	 */
-	void getInRange(OctCube const& cube, DArray<T>* list)
+	void getInRange(OctCube const& cube, std::vector<T>* list)
 	{
 		// if this doesn't intersect with this cube, none of our children would
 		//	either, so we can leave
@@ -249,10 +249,10 @@ private:
 		else
 		{
 			// only add objects which aren't already in the list
-			for (int i = 0; i < m_objects.getCount(); ++i)
+			for (int i = 0; i < m_objects.size(); ++i)
 			{
 				bool wasInList = false;
-				for (int j = 0; j < list->getCount(); ++j)
+				for (int j = 0; j < list->size(); ++j)
 				{
 					if (m_objects[i]->data == (*list)[j])
 					{
@@ -261,7 +261,7 @@ private:
 					}
 				}
 				if (!wasInList)
-					list->add(m_objects[i]->data);
+					list->push_back(m_objects[i]->data);
 			}
 		}
 	}

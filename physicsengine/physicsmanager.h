@@ -9,9 +9,9 @@
  * ================================= */
 #pragma once
 
-#include <darray.h>
+#include <vector>
 #include <octree.h>
-#include <vector3.h>
+#include <glm/glm.hpp>
 
 class PhysicsBody;
 
@@ -32,17 +32,17 @@ public:
 	// returns the closest body that intersects with a ray and also outputs
 	// the position that the intersection occured at
 	// can return nullptr if the ray intersected nothing
-	PhysicsBody* rayCast(Vector3 const& start, Vector3 const& dir, 
-		Vector3& outPos);
+	PhysicsBody* rayCast(glm::vec3 const& start, glm::vec3 const& dir, 
+		glm::vec3& outPos);
 
 	// grabs a pointer to the octree containing all our bodies
 	Octree<PhysicsBody*>* getTree() { return m_tree; }
 	
 	// gets a pointer to our list of bodies
-	DArray<PhysicsBody*>* getBodies() { return &m_bodies; }
+	std::vector<PhysicsBody*>* getBodies() { return &m_bodies; }
 	// uses the octree to get a list of bodies in a certain range
-	DArray<PhysicsBody*> getBodiesInRange(Vector3 const& min, 
-		Vector3 const& max);
+	std::vector<PhysicsBody*> getBodiesInRange(glm::vec3 const& min, 
+		glm::vec3 const& max);
 
     static float gravity;
 
@@ -54,7 +54,7 @@ private:
 
 	static PhysicsManager* m_instance;
 
-	DArray<PhysicsBody*> m_bodies;
+	std::vector<PhysicsBody*> m_bodies;
 	Octree<PhysicsBody*>* m_tree;
 
 };

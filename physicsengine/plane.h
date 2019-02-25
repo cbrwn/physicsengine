@@ -5,12 +5,12 @@
 class Plane : public Actor
 {
 public:
-	Plane(Vector3 topLeft, Vector3 topRight, Vector3 bottomRight,
-		Vector3 bottomLeft, Vector4 col);
+	Plane(glm::vec3 topLeft, glm::vec3 topRight, glm::vec3 bottomRight,
+		glm::vec3 bottomLeft, glm::vec4 col);
 
 	void update(float delta) override;
 	void draw() override;
 private:
-	Vector3 m_points[4];
-	Vector4 m_colour;
+	glm::vec3 m_points[4];
+	glm::vec4 m_colour;
 };

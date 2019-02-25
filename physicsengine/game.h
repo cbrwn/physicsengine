@@ -4,7 +4,7 @@
  * ================================= */
 #pragma once
 
-#include <darray.h>
+#include <vector>
 #include <Application.h>
 
 class BaseState;
@@ -37,7 +37,7 @@ public:
 
 protected:
 	BaseState* m_currentState;
-	DArray<BaseState*> m_states;
+	std::vector<BaseState*> m_states;
 
 	float m_accumulatedDelta;
 

@@ -3,6 +3,8 @@
 #include <color.h>
 #include <gmath.h>
 #include <Input.h>
+#define GLM_ENABLE_EXPERIMENTAL
+#include <glm/gtx/norm.hpp>
 
 #include "game.h"
 #include "world.h"
@@ -22,11 +24,11 @@ void DemoState::onEnter()
 {
 	m_world = new World(m_game);
 
-	m_world->addActor(new Box(Vector3(0, 0, 0), Vector3(100, 1, 100), 0x333333ff));
+	m_world->addActor(new Box(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(100.0f, 1.0f, 100.0f), 0x333333ff));
 
-	for (int i = 0; i < 20; ++i) {
-		Vector3 siz(randBetween(0.1f, 0.8f), randBetween(0.1f, 0.8f), randBetween(0.1f, 0.8f));
-		Vector3 pos(randBetween(-5.0f, 5.0f), randBetween(1.1f, 5.8f), randBetween(-5.1f, 5.8f));
+	for (int i = 0; i < 2; ++i) {
+		glm::vec3 siz(randBetween(0.1f, 0.8f), randBetween(0.1f, 0.8f), randBetween(0.1f, 0.8f));
+		glm::vec3 pos(randBetween(-5.0f, 5.0f), randBetween(1.1f, 5.8f), randBetween(-5.1f, 5.8f));
 		Box* b = new Box(pos, siz, randomColor());
 		b->getBody()->setMass(randBetween(0.1f, 2.0f));
 		b->getBody()->setStatic(false);
@@ -35,19 +37,19 @@ void DemoState::onEnter()
 
 	const float height = 1.0f;
 	for (int i = 0; i < 2; ++i) {
-		Vector3 siz(height, height, height);
-		Vector3 pos(0.0f, (i+1)*height * 2, 0.0f);
+		glm::vec3 siz(height, height, height);
+		glm::vec3 pos(0.0f, (i+1)*height * 2, 0.0f);
 		Ball* b = new Ball(pos, siz.y, randomColor());
 		b->getBody()->setMass(1.0f);
 		b->getBody()->setStatic(false);
 		m_world->addActor(b);
 	}
 
-	Ball* staticBall = new Ball(Vector3(8, 3, 8), 1.5f, 0xffffffff);
+	Ball* staticBall = new Ball(glm::vec3(8.0f, 3.0f, 8.0f), 1.5f, 0xffffffff);
 	staticBall->getBody()->setStatic(true);
 	m_world->addActor(staticBall);
 
-	m_world->getCamera()->setPosition(Vector3(0, 6, 20));
+	m_world->getCamera()->setPosition(glm::vec3(0.0f, 6.0f, 20.0f));
 	m_world->getCamera()->setPitch(-0.2f);
 
 	m_timer = 0.0f;
@@ -73,15 +75,15 @@ void DemoState::update(float delta)
 	// detect when we grab a box
 	if (input->wasMouseButtonPressed(aie::INPUT_MOUSE_BUTTON_LEFT)) {
 		// cast ray from camera
-		Vector3 rayStart, rayDir;
+		glm::vec3 rayStart, rayDir;
 		m_world->getMouseRay(&rayStart, &rayDir);
 
-		Vector3 hitPoint;
+		glm::vec3 hitPoint;
 		PhysicsBody* hitBod = PhysicsManager::getInstance()->rayCast(rayStart, rayDir, hitPoint);
 		if (hitBod && !hitBod->isStatic()) {
 			m_grabbed = hitBod;
 
-			m_grabMagnitude = (rayStart - hitBod->getPosition()).magnitude();
+			m_grabMagnitude = glm::length(rayStart - hitBod->getPosition());
 			m_targetMagnitude = m_grabMagnitude;
 			m_grabbed->setUseGravity(false);
 			m_grabbed->setDebug(true);
@@ -93,7 +95,7 @@ void DemoState::update(float delta)
 	}
 
 	if (m_grabbed) {
-		Vector3 rayStart, rayDir;
+		glm::vec3 rayStart, rayDir;
 		m_world->getMouseRay(&rayStart, &rayDir);
 
 		float thisScroll = (float)input->getMouseScroll();
@@ -104,7 +106,8 @@ void DemoState::update(float delta)
 
 		auto destPos = rayStart + (rayDir * m_grabMagnitude);
 		//m_grabbed->setPosition(rayStart + (rayDir * m_grabMagnitude));
-		m_grabbed->addForce((destPos - m_grabbed->getPosition())*delta*20.0f, Vector3());
+		m_grabbed->addForce((destPos - m_grabbed->getPosition())*delta*20.0f, glm::vec3());
+		m_grabbed->wakeUp();
 	}
 
 	// detect when box is dropped
@@ -132,12 +135,6 @@ unsigned int DemoState::randomColor()
 	result |= 0xff;
 
 	return result;
-	//unsigned int result = 0;
-	//result |= randBetween(0x00, 0xff) << 24;
-	//result |= randBetween(0x00, 0xff) << 16;
-	//result |= randBetween(0x00, 0xff) << 8;
-	//result |= 0xff;
-	//return result;
 }
 
 void DemoState::doCameraMovement(float delta)
@@ -145,14 +142,14 @@ void DemoState::doCameraMovement(float delta)
 	aie::Input* input = aie::Input::getInstance();
 
 	Camera* c = m_world->getCamera();
-	Vector3 camPos = c->getPosition();
-	Matrix4 camTransform = c->getViewMatrix().inverse();
-	Vector3 movement;
+	glm::vec3 camPos = c->getPosition();
+	glm::mat4 camTransform = c->getViewMatrix();
+	glm::vec3 movement;
 
 	int _mx, _my;
 	input->getMouseXY(&_mx, &_my);
-	Vector2 thisMouse(_mx, _my);
-	Vector2 mouseDelta = thisMouse - m_lastMouse;
+	glm::vec2 thisMouse(_mx, _my);
+	glm::vec2 mouseDelta = thisMouse - m_lastMouse;
 	m_lastMouse = thisMouse;
 
 	const float camSpd = 10.0f;
@@ -172,15 +169,15 @@ void DemoState::doCameraMovement(float delta)
 
 	if (input->isMouseButtonDown(aie::INPUT_MOUSE_BUTTON_RIGHT)) {
 		mouseDelta /= 500.0f;
-		c->setRotation(c->getRotation() + Vector3(mouseDelta.y, -mouseDelta.x, 0.0f));
+		c->setRotation(c->getRotation() + glm::vec3(mouseDelta.y, -mouseDelta.x, 0.0f));
 	}
 
-	if (movement.magnitudeSquared() > 1.0f)
-		movement.normalise();
-	Vector3 offset;
-	offset += camTransform.getForward() * movement.z;
-	offset += camTransform.getRight() * movement.x;
-	offset += camTransform.getUp() * movement.y;
+	if (glm::length2(movement) > 1.0f)
+		movement = glm::normalize(movement);
+	glm::vec3 offset;
+	offset += glm::vec3(camTransform[0]) * movement.z;
+	offset += glm::vec3(camTransform[1]) * movement.x;
+	offset += glm::vec3(camTransform[2]) * movement.y;
 
 	camPos += offset * camSpd * delta;
 	c->setPosition(camPos);

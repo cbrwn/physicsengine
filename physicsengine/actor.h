@@ -4,10 +4,10 @@
  * ================================= */
 #pragma once
 
-#include <darray.h>
-#include <matrix4.h>
+#include <vector>
+#include <glm/glm.hpp>
 
-// include these because all actors basically use it
+ // include these because all actors basically use it
 #include "world.h"
 #include "objectpool.h"
 
@@ -33,7 +33,7 @@ enum ActorClass
 class Actor
 {
 public:
-	Actor(Vector3 pos);
+	Actor(glm::vec3 pos);
 	virtual ~Actor();
 
 	virtual void update(float delta) = 0;
@@ -47,20 +47,20 @@ public:
 	// virtual so we can override it and do something when added to a world
 	virtual void setWorld(World* w);
 
-	ActorType  getType()  { return m_type; }
+	ActorType  getType() { return m_type; }
 	ActorClass getClass() { return m_class; }
 
-	Vector3 getPosition();
+	glm::vec3 getPosition();
 	// sets the actor's local position - position relative to its parent
-	void setLocalPosition(Vector3 const& p);
+	void setLocalPosition(glm::vec3 const& p);
 	// sets the global position - its absolute position in world space
-	void setGlobalPosition(Vector3 const& p);
+	void setGlobalPosition(glm::vec3 const& p);
 
 	// updates its transform matrices and also its children's matrices
 	void updateTransform();
 
-	Matrix4& getLocalTransform() { return m_localTransform; }
-	Matrix4& getGlobalTransform() { return m_globalTransform; }
+	glm::mat4& getLocalTransform() { return m_localTransform; }
+	glm::mat4& getGlobalTransform() { return m_globalTransform; }
 
 	virtual void setEnabled(bool e);
 	bool isEnabled() { return m_enabled; }
@@ -69,8 +69,8 @@ public:
 	virtual void reset();
 
 protected:
-	Matrix4 m_localTransform;
-	Matrix4 m_globalTransform;
+	glm::mat4 m_localTransform;
+	glm::mat4	m_globalTransform;
 
 	ActorType  m_type;
 	ActorClass m_class;
@@ -79,5 +79,5 @@ protected:
 
 	World* m_world;
 	Actor* m_parent;
-	DArray<Actor*> m_children;
+	std::vector<Actor*> m_children;
 };

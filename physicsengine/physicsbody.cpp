@@ -195,19 +195,19 @@ void PhysicsBody::addForce(Vector3 force, Vector3 pos)
 	m_velocity += force;
 
     // abandon all hope for rotation
-    return;
 
 	Vector3 deltaAng = Vector3::cross(force, pos);
 	//deltaAng /= m_momentOfInertia;
     
-	if (deltaAng.magnitudeSquared() > 0.001f)
-		m_angularVelocity -= deltaAng;
+	//if (deltaAng.magnitudeSquared() > 0.001f)
+	//	m_angularVelocity -= deltaAng;
 	if (m_debug && pos.magnitudeSquared() > 0.0f)
 	{
 		Vector3 p = pos + getPosition();
 		aie::Gizmos::addLine(toVec3(p),
 			toVec3(p + force.normalised() * 5.0f),
 			glm::vec4(0, 1, 0, 1));
+		drawSphere(p, 0.2f, Vector4(0, 1, 0, 1));
 	}
 }
 

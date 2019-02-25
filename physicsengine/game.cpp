@@ -33,7 +33,7 @@ bool Game::startup()
 	Gizmos::create(100000, 500000, 10000, 10000);
 
 	m_currentState = nullptr;
-	m_states.add(new GameState(this));
+	m_states.add(new DemoState(this));
 	//m_states.add(new DemoState(this));
 
 	changeState(GAMESTATE_GAME);
@@ -58,17 +58,22 @@ void Game::shutdown()
 
 void Game::update(float deltaTime)
 {
-	if (m_currentState)
-		m_currentState->update(deltaTime);
-
 	PhysicsManager* physics = PhysicsManager::getInstance();
 
 	// attempt to give the physics system a fixed timestep
 	m_accumulatedDelta += deltaTime;
 	if (m_accumulatedDelta >= FIXED_TIMESTEP) {
+		if (m_currentState)
+			m_currentState->update(FIXED_TIMESTEP);
+
 		physics->update(FIXED_TIMESTEP);
 		m_accumulatedDelta -= FIXED_TIMESTEP;
 	}
+
+	aie::Input* input = aie::Input::getInstance();
+
+	if (input->wasKeyPressed(aie::INPUT_KEY_ESCAPE))
+		this->quit();
 }
 
 void Game::draw()

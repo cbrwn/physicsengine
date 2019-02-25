@@ -24,16 +24,6 @@ void DemoState::onEnter()
 
 	m_world->addActor(new Box(Vector3(0, 0, 0), Vector3(100, 1, 100), 0x333333ff));
 
-	//for (int i = 0; i < 10; ++i) {
-	//	Vector3 siz(randBetween(0.1f, 0.8f), randBetween(0.1f, 0.8f), randBetween(0.1f, 0.8f));
-	//	Vector3 pos(randBetween(-5.0f, 5.0f), randBetween(1.1f, 5.8f), randBetween(-5.1f, 5.8f));
-	//	//Box* b = new Box(pos, siz, randomColor());
-	//	Ball* b = new Ball(pos, siz.y*2.0f, randomColor());
-	//	b->getBody()->setMass(randBetween(0.1f, 2.0f));
-	//	b->getBody()->setStatic(false);
-	//	m_world->addActor(b);
-	//}aaaaaaaaaaa
-
 	for (int i = 0; i < 20; ++i) {
 		Vector3 siz(randBetween(0.1f, 0.8f), randBetween(0.1f, 0.8f), randBetween(0.1f, 0.8f));
 		Vector3 pos(randBetween(-5.0f, 5.0f), randBetween(1.1f, 5.8f), randBetween(-5.1f, 5.8f));
@@ -41,8 +31,6 @@ void DemoState::onEnter()
 		b->getBody()->setMass(randBetween(0.1f, 2.0f));
 		b->getBody()->setStatic(false);
 		m_world->addActor(b);
-		if (i == 0)
-			b->getBody()->setDebug(true);
 	}
 
 	const float height = 1.0f;
@@ -53,9 +41,6 @@ void DemoState::onEnter()
 		b->getBody()->setMass(1.0f);
 		b->getBody()->setStatic(false);
 		m_world->addActor(b);
-
-		if (i == 0)
-			b->getBody()->setDebug(true);
 	}
 
 	Ball* staticBall = new Ball(Vector3(8, 3, 8), 1.5f, 0xffffffff);
@@ -99,6 +84,7 @@ void DemoState::update(float delta)
 			m_grabMagnitude = (rayStart - hitBod->getPosition()).magnitude();
 			m_targetMagnitude = m_grabMagnitude;
 			m_grabbed->setUseGravity(false);
+			m_grabbed->setDebug(true);
 			m_grabbed->wakeUp();
 			m_grabbed->setDrag(5.0f);
 
@@ -125,6 +111,7 @@ void DemoState::update(float delta)
 	if (input->wasMouseButtonReleased(aie::INPUT_MOUSE_BUTTON_LEFT)) {
 		if (m_grabbed) {
 			m_grabbed->setUseGravity(true);
+			m_grabbed->setDebug(false);
 			m_grabbed->wakeUp();
 			m_grabbed->setDrag(0.0f);
 			m_grabbed = nullptr;

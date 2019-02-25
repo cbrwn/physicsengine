@@ -40,6 +40,8 @@ PhysicsBody::PhysicsBody(Collider* collider)
 	m_stillTime = 0.0f;
 	m_stillPos = glm::vec3();
 
+	m_transform = glm::mat4(1.0f);
+
 	// physical values
 	m_drag = 0.0f;
 	m_angularDrag = 1.0f;
@@ -164,7 +166,9 @@ void PhysicsBody::setPosition(glm::vec3 const& v)
 
 void PhysicsBody::setRotation(glm::vec3 const& v)
 {
-	glm::mat4 xRot, yRot, zRot;
+	glm::mat4 xRot = glm::mat4(1.0f);
+	glm::mat4 yRot = glm::mat4(1.0f);
+	glm::mat4 zRot = glm::mat4(1.0f);
 
 	xRot = glm::rotate(xRot, v.x, glm::vec3(1, 0, 0));
 	yRot = glm::rotate(yRot, v.y, glm::vec3(0, 1, 0));
@@ -180,7 +184,10 @@ void PhysicsBody::setRotation(glm::vec3 const& v)
 void PhysicsBody::rotate(glm::vec3 const& v)
 {
 	// make rotation matrix
-	glm::mat4 xRot, yRot, zRot;
+	glm::mat4 xRot = glm::mat4(1.0f);
+	glm::mat4 yRot = glm::mat4(1.0f);
+	glm::mat4 zRot = glm::mat4(1.0f);
+
 	xRot = glm::rotate(xRot, v.x, glm::vec3(1, 0, 0));
 	yRot = glm::rotate(yRot, v.y, glm::vec3(0, 1, 0));
 	zRot = glm::rotate(zRot, v.z, glm::vec3(0, 0, 1));
@@ -223,7 +230,7 @@ void PhysicsBody::addForce(glm::vec3 force, glm::vec3 pos)
 glm::vec3 PhysicsBody::transformPoint(glm::vec3 const& pt)
 {
 	// make a position matrix using this point
-	glm::mat4 pointMatrix;
+	glm::mat4 pointMatrix = glm::mat4(1.0f);
 	pointMatrix[3] = glm::vec4(pt, pointMatrix[3].w);
 
 	// transform it with our current transform
@@ -236,7 +243,7 @@ glm::vec3 PhysicsBody::transformPoint(glm::vec3 const& pt)
 glm::vec3 PhysicsBody::rotatePoint(glm::vec3 const & pt)
 {
 	// make a position matrix using this point
-	glm::mat4 pointMatrix;
+	glm::mat4 pointMatrix = glm::mat4(1.0f);
 	pointMatrix[3] = glm::vec4(pt, pointMatrix[3].w);
 
 	// transform it with JUST our rotation matrix
@@ -461,8 +468,8 @@ void PhysicsBody::checkCollision()
 		Collider* acol = body->getCollider();
 
 		// perform SAT collision and resolve it if it happened
-		glm::vec3 axis;
-		glm::vec3 point;
+		glm::vec3 axis = { 0.0f, 0.0f, 0.0f };
+		glm::vec3 point = { 0.0f, 0.0f, 0.0f };
 		float penetration;
 		if (isCollidingSAT(acol, penetration, axis, point))
 		{

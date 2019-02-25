@@ -19,6 +19,8 @@ World::World(Game* game)
 {
 	m_camera = new Camera();
 	m_pool = new ObjectPool(this);
+
+	m_projectionMatrix = glm::mat4(1.0f);
 }
 
 World::~World()
@@ -41,11 +43,6 @@ void World::addActor(Actor* a)
 
 void World::update(float delta)
 {
-	auto p = m_camera->getPosition();
-	auto r = m_camera->getRotation();
-
-	//printf("(%.2f, %.2f, %.2f) (%.2f, %.2f, %.2f)\n", p.x, p.y, p.z, r.x, r.y, r.z);
-
 	for (int i = 0; i < m_actors.size(); ++i)
 		if (m_actors[i]->isEnabled())
 			m_actors[i]->update(delta);
@@ -60,7 +57,7 @@ void World::draw()
 		if (m_actors[i]->isEnabled())
 			m_actors[i]->draw();
 
-	//PhysicsManager::getInstance()->drawTree(PhysicsManager::getInstance()->getTree());
+	PhysicsManager::getInstance()->drawTree(PhysicsManager::getInstance()->getTree());
 
 	float windowWidth = (float)m_game->getWindowWidth();
 	float windowHeight = (float)m_game->getWindowHeight();

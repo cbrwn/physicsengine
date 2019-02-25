@@ -11,6 +11,9 @@ Actor::Actor(glm::vec3 pos)
 	m_type = ACTORTYPE_NORMAL;
 	m_class = ACTORCLASS_DEFAULT;
 
+	m_localTransform = glm::mat4(1.0f);
+	m_globalTransform = glm::mat4(1.0f);
+
 	m_enabled = true;
 	m_world = nullptr;
 	m_parent = nullptr;

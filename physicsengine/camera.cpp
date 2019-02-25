@@ -7,7 +7,12 @@
 #include <glm/glm.hpp>
 #include <glm/ext.hpp>
 
-Camera::Camera() { } 
+Camera::Camera() {
+	m_rotation = { 0.0f };
+	m_position = { 0.0f };
+	m_parentMatrix = glm::mat4(1.0f);
+}
+
 Camera::~Camera() {}
 
 glm::vec3 Camera::getPosition()
@@ -30,18 +35,20 @@ void Camera::setRotation(glm::vec3 const& rot)
 	m_rotation = rot;
 }
 
-void Camera::setYaw(float r) { m_rotation.y = r; } 
+void Camera::setYaw(float r) { m_rotation.y = r; }
 void Camera::setRoll(float r) { m_rotation.z = r; }
 void Camera::setPitch(float r) { m_rotation.x = r; }
 
 glm::mat4 Camera::getViewMatrix()
 {
 	// make position matrix
-	glm::mat4 posMatrix;
+	glm::mat4 posMatrix = glm::mat4(1.0f);
 	posMatrix[3] = glm::vec4(m_position, posMatrix[3].w);
 
 	// make matrices for each rotation axis
-	glm::mat4 xRot, yRot, zRot;
+	glm::mat4 xRot = glm::mat4(1.0f);
+	glm::mat4 yRot = glm::mat4(1.0f);
+	glm::mat4 zRot = glm::mat4(1.0f);
 
 	xRot = glm::rotate(xRot, m_rotation.x, glm::vec3(1, 0, 0));
 	yRot = glm::rotate(yRot, m_rotation.y, glm::vec3(0, 1, 0));

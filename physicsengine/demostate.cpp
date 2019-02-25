@@ -144,7 +144,7 @@ void DemoState::doCameraMovement(float delta)
 	Camera* c = m_world->getCamera();
 	glm::vec3 camPos = c->getPosition();
 	glm::mat4 camTransform = c->getViewMatrix();
-	glm::vec3 movement;
+	glm::vec3 movement = { 0.0f, 0.0f, 0.0f };
 
 	int _mx, _my;
 	input->getMouseXY(&_mx, &_my);
@@ -174,10 +174,10 @@ void DemoState::doCameraMovement(float delta)
 
 	if (glm::length2(movement) > 1.0f)
 		movement = glm::normalize(movement);
-	glm::vec3 offset;
-	offset += glm::vec3(camTransform[0]) * movement.z;
-	offset += glm::vec3(camTransform[1]) * movement.x;
-	offset += glm::vec3(camTransform[2]) * movement.y;
+	glm::vec3 offset = { 0.0f, 0.0f, 0.0f };
+	offset += glm::vec3(camTransform[2]) * -movement.z;
+	offset += glm::vec3(camTransform[0]) * movement.x;
+	offset += glm::vec3(camTransform[1]) * movement.y;
 
 	camPos += offset * camSpd * delta;
 	c->setPosition(camPos);

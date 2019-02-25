@@ -16,7 +16,7 @@ void Collider::drawPoints()
 	for (int i = 0; i < points.size(); ++i)
 	{
 		glm::vec3 p = points[i];
-		glm::mat4 m;
+		glm::mat4 m = glm::mat4(1.0f);
 		m[3] = glm::vec4(p, m[3].w);
 
 		// translate the point with the body
@@ -42,7 +42,7 @@ void Collider::drawNormals()
 
 	for (int i = 0; i < normals.size(); ++i)
 	{
-		glm::mat4 m;
+		glm::mat4 m = glm::mat4(1.0f);
 		// extend normals out 1.5 units
 		m[3] = glm::vec4(normals[i] * 1.5f, m[3].w);
 

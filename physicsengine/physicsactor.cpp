@@ -38,9 +38,6 @@ void PhysicsActor::update(float delta)
 		// apply the body's transform to our actor transform
 		m_localTransform = m_body->getTransformMatrix();
 		updateTransform();
-
-		auto p = getPosition();
-		printf("%.2f, %.2f, %.2f\n", p.x, p.y, p.z);
 	}
 }
 

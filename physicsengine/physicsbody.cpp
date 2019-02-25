@@ -680,33 +680,34 @@ bool PhysicsBody::isCollidingSAT(Collider* other, float& penOut, glm::vec3& axis
 	Collider* thisCol = m_collider;
 
 	// grab a list of all the objects' normals
-	std::vector<glm::vec3> axes;
+	//std::vector<glm::vec3> axes;
+	glm::vec3* axes = new glm::vec3[thisCol->normals.size() + other->normals.size()];
 	for (int i = 0; i < thisCol->normals.size(); ++i)
-		axes.push_back(rotatePoint(thisCol->normals[i]));
+		axes[i] = rotatePoint(thisCol->normals[i]);
 	for (int i = 0; i < other->normals.size(); ++i)
-		axes.push_back(other->body->rotatePoint(other->normals[i]));
+		axes[i+thisCol->normals.size()-1] = other->body->rotatePoint(other->normals[i]);
 
 	// transform the colliders' points to world position
-	std::vector<glm::vec3> thisPoints;
+	glm::vec3* thisPoints = new glm::vec3[thisCol->points.size()];
 	for (int i = 0; i < thisCol->points.size(); ++i)
 	{
 		// transform the point based on this body's transform matrix
 		glm::vec3 pt = transformPoint(thisCol->points[i]);
-		thisPoints.push_back(pt);
+		thisPoints[i] = (pt);
 	}
 
-	std::vector<glm::vec3> otherPoints;
+	glm::vec3* otherPoints = new glm::vec3[other->points.size()];
 	for (int i = 0; i < other->points.size(); ++i)
 	{
 		// transform the point based on its body's transform matrix
 		glm::vec3 pt = other->body->transformPoint(other->points[i]);
-		otherPoints.push_back(pt);
+		otherPoints[i] = (pt);
 	}
 
 	std::vector<glm::vec3> penPoints;
 	std::vector<float> penetrations;
 	// start checking for overlaps!
-	for (int i = 0; i < axes.size(); ++i)
+	for (int i = 0; i < thisCol->normals.size() + other->normals.size(); ++i)
 	{
 		glm::vec3 axis = axes[i];
 
@@ -718,7 +719,7 @@ bool PhysicsBody::isCollidingSAT(Collider* other, float& penOut, glm::vec3& axis
 		int minIndex = -1;
 		int maxIndex = -1;
 		// project each vertex of this shape onto the current axis
-		for (int j = 0; j < thisPoints.size(); ++j)
+		for (int j = 0; j < thisCol->points.size(); ++j)
 		{
 			glm::vec3 pt = thisPoints[j];
 			float dot = glm::dot(axis, pt);
@@ -735,7 +736,7 @@ bool PhysicsBody::isCollidingSAT(Collider* other, float& penOut, glm::vec3& axis
 			}
 		}
 		// project each vertex of the other shape onto the current axis
-		for (int j = 0; j < otherPoints.size(); ++j)
+		for (int j = 0; j < other->points.size(); ++j)
 		{
 			glm::vec3 pt = otherPoints[j];
 			float dot = glm::dot(axis, pt);
@@ -792,6 +793,10 @@ bool PhysicsBody::isCollidingSAT(Collider* other, float& penOut, glm::vec3& axis
 		axisOut = axes[lowest] * -1.0f;
 	else
 		axisOut = axes[lowest];
+
+	delete[] axes;
+	delete[] thisPoints;
+	delete[] otherPoints;
 
 	// we did collide! yay!
 	return true;
